@@ -7,16 +7,29 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "bundleRelease:android": "cd android && gradlew.bat bundleRelease && cd ..",
+    "assembleRelease:android": "cd android && gradlew.bat assembleRelease && cd ..",
+    "assembleDebug:android": "cd android && gradlew.bat assembleDebug && cd ..",
+    "releaseAndroid": "npm run bundleRelease:android && npm run assembleRelease:android",
+    "installAndroidRelease": "npm run releaseAndroid && adb install -r android\\app\\build\\outputs\\apk\\release\\app-release.apk",
+    "c:ios": "cd ios && xcodebuild clean && cd ..",
+    "c:android": "cd android && gradlew.bat clean && cd ..",
+    "android:release": "react-native run-android --variant=release"
   },
   "dependencies": {
+    "@react-navigation/native-stack": "^7.3.13",
     "react": "19.0.0",
-    "react-native": "0.79.2"
+    "react-native": "0.79.2",
+    "react-native-bootsplash": "^6.3.8",
+    "react-native-reanimated": "^3.17.5",
+    "react-native-safe-area-context": "^5.4.0",
+    "react-native-screens": "^4.10.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
-    "@babel/runtime": "^7.25.0",
+    "@babel/runtime": "^7.27.1",
     "@react-native-community/cli": "18.0.0",
     "@react-native-community/cli-platform-android": "18.0.0",
     "@react-native-community/cli-platform-ios": "18.0.0",
@@ -24,6 +37,7 @@
     "@react-native/eslint-config": "0.79.2",
     "@react-native/metro-config": "0.79.2",
     "@react-native/typescript-config": "0.79.2",
+    "@react-navigation/native": "^7.1.9",
     "@types/jest": "^29.5.13",
     "@types/react": "^19.0.0",
     "@types/react-test-renderer": "^19.0.0",
