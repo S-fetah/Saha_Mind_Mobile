@@ -8,62 +8,67 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
 import logo from '../assets/images/logor.png';
-export default function Home() {
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {RootStackParams} from '../types';
+
+type HomeScreenProps = Readonly<
+  NativeStackScreenProps<RootStackParams, 'Home'>
+>;
+export default function Home({navigation}: HomeScreenProps) {
   return (
-    <SafeAreaProvider style={styles.area}>
-      <SafeAreaView style={styles.container}>
-        <View>
-          <Image source={logo} style={styles.image} />
-          <Text style={styles.logoText}> Saha</Text>
-          <Text style={styles.logoText}> Mind</Text>
-        </View>
+    <SafeAreaView style={styles.container}>
+      <View>
+        <Image source={logo} style={styles.image} />
+        <Text style={styles.logoText}> Saha</Text>
+        <Text style={styles.logoText}> Mind</Text>
+      </View>
 
-        <View style={styles.welcome}>
-          <Text style={styles.text}>
-            Welcome. you Can Start By Signing up Or Login if You Already have An
-            Account!
-          </Text>
-        </View>
-        <TouchableOpacity style={styles.login}>
-          <Text style={styles.loginText}>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.signup}>
-          <Text style={styles.signupText}>Signup</Text>
-        </TouchableOpacity>
+      <View style={styles.welcome}>
+        <Text style={styles.text}>
+          Welcome. you Can Start By Signing up Or Login if You Already have An
+          Account!
+        </Text>
+      </View>
+      <TouchableOpacity
+        style={styles.login}
+        onPress={() => navigation.navigate('Login')}>
+        <Text style={styles.loginText}>Log In</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.signup}
+        onPress={() => navigation.navigate('Signup')}>
+        <Text style={styles.signupText}>Sign Up</Text>
+      </TouchableOpacity>
 
-        <View style={styles.guest}>
-          <Text>Or</Text>
-          <TouchableOpacity>
-            <Text style={styles.guestText}>Continue as a Guest </Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    </SafeAreaProvider>
+      <View style={styles.guest}>
+        <Text>Or</Text>
+        <TouchableOpacity>
+          <Text style={styles.guestText}>Continue as a Guest </Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  area: {
-    backgroundColor: 'white',
-  },
   container: {
-    marginTop:
+    backgroundColor: 'white',
+
+    height: '100%',
+    alignItems: 'center',
+    padding: 30,
+    paddingTop:
       Platform.OS === 'android' && StatusBar.currentHeight
         ? StatusBar.currentHeight + 20
         : 50,
-    padding: 30,
-    height: '100%',
-    alignItems: 'center',
   },
   welcome: {
     top: 250,
     width: '80%',
   },
   image: {
-    top: 125,
+    top: '20%',
   },
   text: {
     fontSize: 12,
@@ -78,7 +83,7 @@ const styles = StyleSheet.create({
     fontSize: 35,
     fontStyle: 'normal',
     fontWeight: 100,
-    top: 125,
+    top: '20%',
     alignSelf: 'center',
     textTransform: 'capitalize',
     marginBottom: -15,
@@ -86,7 +91,7 @@ const styles = StyleSheet.create({
   login: {
     width: 207,
     height: 45,
-    top: 280,
+    top: 270,
     backgroundColor: '#4cB3a5',
     marginBottom: 15,
     borderRadius: 30,
@@ -94,7 +99,7 @@ const styles = StyleSheet.create({
   signup: {
     width: 207,
     height: 45,
-    top: 273,
+    top: 265,
     backgroundColor: '#E7E7E7',
     marginBottom: 15,
     borderRadius: 30,

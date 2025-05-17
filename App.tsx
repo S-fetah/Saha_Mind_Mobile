@@ -11,6 +11,10 @@ import BootSplash from 'react-native-bootsplash';
 import Home from './src/screens/Home';
 import {RootStackParams} from './src/types';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import Login from './src/screens/Login';
+import Signup from './src/screens/Signup';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import SecondSignup from './src/screens/SecondSignup';
 
 const Stack = createNativeStackNavigator<RootStackParams>();
 function App(): React.JSX.Element {
@@ -19,13 +23,18 @@ function App(): React.JSX.Element {
   }, []);
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={{headerShown: false}}>
-        <Stack.Screen name="Home" component={Home} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Home"
+          screenOptions={{headerShown: false}}>
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Signup" component={Signup} />
+          <Stack.Screen name="SecondSignUp" component={SecondSignup} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 
