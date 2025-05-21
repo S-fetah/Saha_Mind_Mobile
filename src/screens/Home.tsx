@@ -43,7 +43,7 @@ export default function Home({navigation}: HomeScreenProps) {
 
       <View style={styles.guest}>
         <Text>Or</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Main')}>
           <Text style={styles.guestText}>Continue as a Guest </Text>
         </TouchableOpacity>
       </View>
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   image: {
-    top: '20%',
+    top: '40%',
   },
   text: {
     fontSize: 12,
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     fontSize: 35,
     fontStyle: 'normal',
     fontWeight: 100,
-    top: '20%',
+    top: '40%',
     alignSelf: 'center',
     textTransform: 'capitalize',
     marginBottom: -15,
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     padding: 5,
     textAlign: 'center',
     color: 'white',
-    fontSize: 24,
+    fontSize: 21,
     fontWeight: '500',
     textTransform: 'capitalize',
     height: '100%',
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     padding: 5,
     textAlign: 'center',
     color: '#4cB3a5',
-    fontSize: 24,
+    fontSize: 21,
     fontWeight: '500',
     textTransform: 'capitalize',
     height: '100%',

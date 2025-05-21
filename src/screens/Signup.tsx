@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  Touchable,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -17,7 +16,7 @@ import {RootStackParams} from '../types';
 import google from '../assets/images/google.png';
 import facebook from '../assets/images/facebook.png';
 
-type signUpProps = NativeStackScreenProps<RootStackParams, 'Signup'>;
+type signUpProps = Readonly<NativeStackScreenProps<RootStackParams, 'Signup'>>;
 
 export default function Signup({navigation}: signUpProps) {
   const [date, setDate] = useState(new Date('2000-01-01'));
@@ -42,8 +41,8 @@ export default function Signup({navigation}: signUpProps) {
           mode="date"
           maximumDate={new Date(2007, 1, 1)}
           minimumDate={new Date('1950-01-01')}
-          onDateChange={date => setDate(date)}
-          style={{height: 160}}
+          onDateChange={v => setDate(v)}
+          style={styles.dateContainer}
         />
       </View>
 
@@ -60,8 +59,8 @@ export default function Signup({navigation}: signUpProps) {
       </TouchableOpacity>
 
       <View style={styles.textContainer}>
-        <Text style={{marginTop: '2%'}}>Or Sign up with</Text>
-        <View style={{flexDirection: 'row', columnGap: 15}}>
+        <Text style={styles.alternateText}>Or Sign up with</Text>
+        <View style={styles.imgsContainer}>
           <TouchableOpacity style={styles.miniImgs}>
             <Image source={google} />
           </TouchableOpacity>
@@ -104,7 +103,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   dateContainer: {
-    height: 50,
+    height: 150,
   },
   signupText: {
     padding: 5,
@@ -143,4 +142,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     rowGap: 10,
   },
+  imgsContainer: {flexDirection: 'row', columnGap: 15},
+  alternateText: {marginTop: '2%', fontFamily: 'League Spartan'},
 });

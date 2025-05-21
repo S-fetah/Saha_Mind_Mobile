@@ -3,4 +3,5 @@ export type RootStackParams = {
   Login: undefined;
   Signup: undefined;
   SecondSignUp: {fullName: string; email: string; birthDate: string};
+  Main: undefined;
 };
