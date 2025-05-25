@@ -11,5 +11,12 @@ type TabIconProps = Readonly<{
 }>;
 
 export default function TabIcon({focused, icon: Icon, width}: TabIconProps) {
-  return <Icon size={25} color={focused ? 'blue' : '#333'} style={{width}} />;
+  return (
+    <Icon
+      size={25}
+      style={{width}}
+      color={focused ? 'black' : 'black'}
+      fillOpacity={0.7}
+    />
+  );
 }

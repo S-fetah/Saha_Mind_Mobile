@@ -5,7 +5,13 @@ import {
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
 import TabIcon from '../../components/TabIcon';
-import {House, MessageCircle, Settings, LucideIcon} from 'lucide-react-native';
+import {
+  House,
+  MessageCircle,
+  Settings,
+  LucideIcon,
+  Home,
+} from 'lucide-react-native';
 
 import Animated, {
   Easing,
@@ -14,20 +20,20 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import HomeScreen from '../Pages/HomeScreen';
+import ProfileScreen from '../Pages/ProfileScreen';
+import ChatScreen from '../Pages/ChatScreen';
 
 const Tab = createBottomTabNavigator();
 
 const {width: deviceWidth, height: deviceHeight} = Dimensions.get('window');
 
-const HomeScreen = () => <Text>Home</Text>;
-const ChatScreen = () => <Text>Chat</Text>;
-const ProfileScreen = () => <Text>Profile</Text>;
-
 const Tabs = [
   {
     name: 'Home',
     component: HomeScreen,
-    icon: House,
+    icon: Home,
   },
   {
     name: 'Chat',
@@ -76,29 +82,28 @@ const CreateTabBarButton = ({
     if (!isFocused) {
       translateY.value = withTiming(-15, {
         duration: 200,
-        easing: Easing.inOut(Easing.quad),
-        reduceMotion: ReduceMotion.System,
+        easing: Easing.elastic(0),
+        reduceMotion: ReduceMotion.Never,
       });
 
-      scale.value = withTiming(1.3, {
+      scale.value = withTiming(1.4, {
         duration: 200,
-        easing: Easing.inOut(Easing.quad),
-        reduceMotion: ReduceMotion.System,
+        easing: Easing.elastic(0),
+        reduceMotion: ReduceMotion.Never,
       });
 
       setTimeout(() => {
         translateY.value = withTiming(0, {
-          duration: 200,
-          easing: Easing.inOut(Easing.quad),
-          reduceMotion: ReduceMotion.System,
+          duration: 300,
+          easing: Easing.elastic(1),
+          reduceMotion: ReduceMotion.Never,
         });
-
         scale.value = withTiming(1, {
-          duration: 200,
-          easing: Easing.inOut(Easing.quad),
-          reduceMotion: ReduceMotion.System,
+          duration: 300,
+          easing: Easing.elastic(1),
+          reduceMotion: ReduceMotion.Never,
         });
-      }, 200);
+      }, 220);
     }
 
     onPress?.(e);
@@ -119,49 +124,57 @@ const CreateTabBarButton = ({
         alignItems: 'center',
       }}>
       <Animated.View style={animatedStyle}>{children}</Animated.View>
-      <Text style={{fontSize: 10, fontWeight: 'bold'}}>{name}</Text>
+      <Text
+        style={{
+          fontSize: 10,
+          fontWeight: 'bold',
+          backgroundColor: 'transparent',
+          color: '#121714',
+        }}>
+        {name}
+      </Text>
     </Pressable>
   );
 };
 
 export default function Main() {
   return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          height: 60,
-          borderRadius: 10,
-          marginBottom: deviceHeight > 800 ? '3%' : 0,
-          // position: 'absolute',
-          // bottom: 16,
-          // marginLeft: 16,
-          // width: deviceWidth - 32,
-        },
-      }}>
-      {Tabs.map(tab => (
-        <Tab.Screen
-          key={tab.name}
-          name={tab.name}
-          component={tab.component}
-          options={{
-            tabBarButton: props =>
-              CreateTabBarButton({...props, name: tab.name}),
-            tabBarActiveTintColor: 'blue',
-            tabBarShowLabel: false,
-            tabBarLabelStyle: {
-              fontSize: 12,
-              fontWeight: 'bold',
-              bottom: -5,
-            },
-            tabBarIcon: createTabBarIcon(
-              tab.icon,
-              tab.name,
-              deviceWidth / Tabs.length,
-            ),
-          }}
-        />
-      ))}
-    </Tab.Navigator>
+    <SafeAreaProvider>
+      <Tab.Navigator
+        screenOptions={{
+          headerShown: false,
+          tabBarStyle: {
+            height: 60,
+            borderRadius: 10,
+            marginBottom: deviceHeight > 800 ? '6%' : -4,
+            backgroundColor: '#f2fbf9',
+          },
+        }}>
+        {Tabs.map(tab => (
+          <Tab.Screen
+            key={tab.name}
+            name={tab.name}
+            component={tab.component}
+            options={{
+              tabBarButton: props =>
+                CreateTabBarButton({...props, name: tab.name}),
+
+              tabBarShowLabel: false,
+              tabBarLabelStyle: {
+                fontSize: 12,
+                fontWeight: 'bold',
+                bottom: -5,
+              },
+
+              tabBarIcon: createTabBarIcon(
+                tab.icon,
+                tab.name,
+                deviceWidth / Tabs.length,
+              ),
+            }}
+          />
+        ))}
+      </Tab.Navigator>
+    </SafeAreaProvider>
   );
 }
