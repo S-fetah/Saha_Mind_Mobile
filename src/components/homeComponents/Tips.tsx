@@ -63,16 +63,6 @@ export default function Tips() {
           paragraph="Regular physical activity releases endorphins, which have mood-boosting effects. Aim for at least 30 minutes of exercise most days."
           img={sports}
         />
-        <Tip
-          title="Practise Mindfulness"
-          paragraph="Take a few moments each day to focus on your breath and surroundings. Mindfulness can help reduce stress and improve your mood."
-          img={meditation}
-        />
-        <Tip
-          title="Stay Active"
-          paragraph="Regular physical activity releases endorphins, which have mood-boosting effects. Aim for at least 30 minutes of exercise most days."
-          img={sports}
-        />
       </ScrollView>
     </View>
   );

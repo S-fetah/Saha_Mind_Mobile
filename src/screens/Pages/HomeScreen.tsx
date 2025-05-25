@@ -86,10 +86,10 @@ export default function HomeScreen() {
 
   const toggleCheckins = () => {
     if (arrow === 'up') {
-      progress.value = withTiming(0, {duration: 400});
+      progress.value = withTiming(0, {duration: 100});
       setArrow('down');
     } else {
-      progress.value = withTiming(1, {duration: 400});
+      progress.value = withTiming(1, {duration: 700});
       setArrow('up');
     }
   };
@@ -102,6 +102,7 @@ export default function HomeScreen() {
           translateY: interpolate(progress.value, [0, 1], [-10, 0]),
         },
       ],
+      marginBottom: 5,
       zIndex: 10,
     };
   });
