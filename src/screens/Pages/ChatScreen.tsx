@@ -8,7 +8,6 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import profileImage from '../../assets/images/Profile/pp.png';
 import assistant from '../../assets/images/Profile/assisstant.png';
 import {ImageIcon, Send} from 'lucide-react-native';
@@ -23,7 +22,7 @@ const ChatScreen = () => {
     setText(text);
   };
   return (
-    <Screen>
+    <Screen gradient={true}>
       <View style={styles.header}>
         <Text style={styles.title}>AI Assistant</Text>
         <View style={{width: 20}} />

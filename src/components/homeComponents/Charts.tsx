@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  ImageSourcePropType,
-  Easing,
-} from 'react-native';
+import {View, Text, Image, StyleSheet, ImageSourcePropType} from 'react-native';
 import React, {useEffect} from 'react';
 import {fellings} from '../../utils/constants';
 import Animated, {
@@ -63,7 +56,7 @@ function Place({mood, onfinish}: moodType) {
         },
       ),
     );
-  }, []);
+  }, [containerProgress, barProgress, mood.index]);
 
   const containerStyle = useAnimatedStyle(() => {
     return {
@@ -141,7 +134,7 @@ const Charts = () => {
               }}
               onfinish={() => {
                 _anime.value = 1;
-                console.log('has finished', index);
+                // console.log('has finished', index);
               }}
             />
           );

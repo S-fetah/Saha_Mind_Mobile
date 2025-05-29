@@ -71,7 +71,7 @@ const ProfileScreen = () => {
   };
 
   return (
-    <Screen>
+    <Screen gradient={true}>
       <View style={styles.profileInfoContainer}>
         <View style={styles.profileImageContainer}>
           <Image source={profileImage} style={styles.profileImage} />
@@ -236,7 +236,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e0f2fe',
     elevation: 5,
-    bottom: '-5%',
   },
   logoutButtonText: {
     fontSize: 16,

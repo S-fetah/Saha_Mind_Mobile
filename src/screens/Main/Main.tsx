@@ -1,17 +1,11 @@
 import {Text, Dimensions, Pressable, GestureResponderEvent} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {
   BottomTabBarButtonProps,
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
 import TabIcon from '../../components/TabIcon';
-import {
-  House,
-  MessageCircle,
-  Settings,
-  LucideIcon,
-  Home,
-} from 'lucide-react-native';
+import {MessageCircle, Settings, LucideIcon, Home} from 'lucide-react-native';
 
 import Animated, {
   Easing,
@@ -24,6 +18,7 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import HomeScreen from '../Pages/HomeScreen';
 import ProfileScreen from '../Pages/ProfileScreen';
 import ChatScreen from '../Pages/ChatScreen';
+import {EventArg} from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
@@ -66,20 +61,21 @@ const createTabBarIcon =
       />
     );
 
-type CreateTabBarButtonProps = Readonly<{name: string}> &
+type CreateTabBarButtonProps = Readonly<{name: string; active: focusType[]}> &
   BottomTabBarButtonProps;
 const CreateTabBarButton = ({
   children,
   onPress,
-  accessibilityState,
   name,
+  active,
 }: CreateTabBarButtonProps) => {
-  const isFocused = accessibilityState?.selected;
+  // const isFocused = accessibilityState?.selected;
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
+  const activeTab = active.find(e => e.screen === name);
 
   const handlePress = (e: GestureResponderEvent) => {
-    if (!isFocused) {
+    if (!activeTab?.active) {
       translateY.value = withTiming(-15, {
         duration: 200,
         easing: Easing.elastic(0),
@@ -136,8 +132,53 @@ const CreateTabBarButton = ({
     </Pressable>
   );
 };
+interface focusType {
+  screen: 'Chat' | 'Home' | 'Profile' | string;
+  active: boolean;
+}
 
 export default function Main() {
+  const [badgeNumber, setBadgeNumber] = useState<number>(3);
+  const [focus, setFocus] = useState<focusType[]>([
+    {
+      screen: 'Home',
+      active: false,
+    },
+    {
+      screen: 'Chat',
+      active: false,
+    },
+    {
+      screen: 'Profile',
+      active: false,
+    },
+  ]);
+  // Extracted tabPress handler to reduce nesting
+  const handleTabPress = (
+    routeName: string,
+    e: EventArg<'tabPress', true, undefined>,
+  ) => {
+    console.log(e.data);
+
+    const initial = [
+      {
+        screen: 'Home',
+        active: false,
+      },
+      {
+        screen: 'Chat',
+        active: false,
+      },
+      {
+        screen: 'Profile',
+        active: false,
+      },
+    ];
+    const filtered = initial.filter(a => a.screen !== routeName);
+    filtered.push({screen: routeName, active: true});
+    setFocus(filtered);
+  };
+
   return (
     <SafeAreaProvider>
       <Tab.Navigator
@@ -157,7 +198,11 @@ export default function Main() {
             component={tab.component}
             options={{
               tabBarButton: props =>
-                CreateTabBarButton({...props, name: tab.name}),
+                CreateTabBarButton({
+                  ...props,
+                  name: tab.name,
+                  active: focus,
+                }),
 
               tabBarShowLabel: false,
               tabBarLabelStyle: {
@@ -165,13 +210,22 @@ export default function Main() {
                 fontWeight: 'bold',
                 bottom: -5,
               },
-
+              tabBarBadge:
+                tab.name === 'Chat' && badgeNumber > 0
+                  ? badgeNumber
+                  : undefined,
               tabBarIcon: createTabBarIcon(
                 tab.icon,
                 tab.name,
                 deviceWidth / Tabs.length,
               ),
             }}
+            listeners={({route}) => ({
+              tabPress: e => {
+                handleTabPress(route.name, e);
+                setBadgeNumber(0); // Clear the badge when Chat tab is pressed
+              },
+            })}
           />
         ))}
       </Tab.Navigator>

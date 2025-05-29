@@ -1,20 +1,21 @@
 import React, {useState} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {fellings} from '../../utils/constants';
-import {DateTime, Duration} from 'luxon';
-import {Screen} from '../../components';
 import {
-  ArrowBigDown,
-  ArrowBigUp,
-  Calendar1,
-  ChevronDown,
-  ChevronUp,
-  FlameIcon,
-  Stars,
-} from 'lucide-react-native';
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {fellings} from '../../utils/constants';
+import {DateTime} from 'luxon';
+import {Screen} from '../../components';
+import {Calendar1, ChevronDown, ChevronUp, Stars} from 'lucide-react-native';
 import Charts from '../../components/homeComponents/Charts';
 import Animated, {
+  Easing,
   interpolate,
+  ReduceMotion,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -24,7 +25,7 @@ import Tips from '../../components/homeComponents/Tips';
 const currentWeekDays = Array(7)
   .fill(0)
   .map((_, i) => {
-    return DateTime.now().plus({days: i});
+    return DateTime.now().minus({days: i - 3});
   });
 const WeekDays = () => {
   const [selectedDay, setSelectedDay] = React.useState<string>(
@@ -81,16 +82,27 @@ const WeekDays = () => {
 };
 
 export default function HomeScreen() {
+  const [badgeNumber, setBadgeNumber] = useState<number>(1);
   const [arrow, setArrow] = useState<'up' | 'down'>('down');
   const progress = useSharedValue(0);
 
   const toggleCheckins = () => {
     if (arrow === 'up') {
-      progress.value = withTiming(0, {duration: 100});
-      setArrow('down');
+      progress.value = withTiming(0, {
+        duration: 400,
+        easing: Easing.inOut(Easing.quad),
+        reduceMotion: ReduceMotion.System,
+      });
+      setTimeout(() => {
+        setArrow('down');
+      }, 150);
     } else {
-      progress.value = withTiming(1, {duration: 700});
       setArrow('up');
+      progress.value = withTiming(1, {
+        duration: 600,
+        easing: Easing.inOut(Easing.quad),
+        reduceMotion: ReduceMotion.System,
+      });
     }
   };
 
@@ -107,109 +119,117 @@ export default function HomeScreen() {
     };
   });
   return (
-    <Screen>
-      <View
-        style={{
-          height: '7%',
-          paddingHorizontal: 16,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexDirection: 'row',
-          marginBottom: 15,
-        }}>
-        <Text style={{fontSize: 18, fontWeight: '300'}}>Hey,Ali! 👋</Text>
-        <View style={{flexDirection: 'row', gap: 20}}>
-          <TouchableOpacity>
-            <Text style={styles.todayStyle}>
-              {DateTime.now().toFormat('ccc, dd LLL ')} <Calendar1 size={18} />{' '}
+    <Screen gradient={false}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1}}>
+        <View
+          style={{
+            height: '7%',
+            paddingHorizontal: 16,
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexDirection: 'row',
+            marginBottom: 15,
+          }}>
+          <Text style={{fontSize: 18, fontWeight: '300'}}>Hey,Ali! 👋</Text>
+          <View style={{flexDirection: 'row', gap: 20}}>
+            <TouchableOpacity>
+              <Text style={styles.todayStyle}>
+                {DateTime.now().toFormat('ccc, dd LLL ')}{' '}
+                <Calendar1 size={18} />{' '}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text style={styles.notifStyle}>🔥5</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <WeekDays />
+        <View
+          style={[styles.todayContainer, {marginTop: 40, marginBottom: 15}]}>
+          <Text style={{fontSize: 16, fontWeight: 500}}>Today's Check-in </Text>
+          <TouchableOpacity onPress={toggleCheckins}>
+            <Text>
+              {arrow === 'up' ? (
+                <View
+                  style={{
+                    borderWidth: 1.5,
+                    borderColor: '#121714',
+                    borderRadius: 50,
+                  }}>
+                  <ChevronUp size={20} />
+                </View>
+              ) : (
+                <View
+                  style={{
+                    borderWidth: 1.5,
+                    borderColor: '#121714',
+                    borderRadius: 50,
+                  }}>
+                  <ChevronDown size={20} />
+                </View>
+              )}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.notifStyle}>🔥5</Text>
-          </TouchableOpacity>
         </View>
-      </View>
-      <WeekDays />
-      <View style={[styles.todayContainer, {marginTop: 40, marginBottom: 15}]}>
-        <Text style={{fontSize: 16, fontWeight: 500}}>Today's Check-in </Text>
-        <TouchableOpacity onPress={toggleCheckins}>
-          <Text>
-            {arrow === 'up' ? (
-              <View
-                style={{
-                  borderWidth: 1.5,
-                  borderColor: '#121714',
-                  borderRadius: 50,
-                }}>
-                <ChevronUp size={20} />
-              </View>
-            ) : (
-              <View
-                style={{
-                  borderWidth: 1.5,
-                  borderColor: '#121714',
-                  borderRadius: 50,
-                }}>
-                <ChevronDown size={20} />
-              </View>
-            )}
-          </Text>
-        </TouchableOpacity>
-      </View>
-      {arrow === 'up' && (
-        <Animated.View
-          style={[
-            styles.todayContainer,
-            {
-              backgroundColor: '#bee8e1',
-              paddingVertical: 8,
-              borderRadius: 30,
-            },
-            animatedStyle,
-          ]}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
+        {arrow === 'up' && (
+          <Animated.View
+            style={[
+              styles.todayContainer,
+              {
+                backgroundColor: '#bee8e1',
+                paddingVertical: 8,
+                borderRadius: 30,
+              },
+              animatedStyle,
+            ]}>
             <View
               style={{
-                padding: 5,
-                backgroundColor: 'white',
-                borderRadius: 50,
-                borderWidth: 1,
-                borderColor: '#fefefe',
+                flexDirection: 'row',
+                alignItems: 'center',
               }}>
-              <Stars color={'gold'} fill={'gold'} />
+              <View
+                style={{
+                  padding: 5,
+                  backgroundColor: 'white',
+                  borderRadius: 50,
+                  borderWidth: 1,
+                  borderColor: '#fefefe',
+                }}>
+                <Stars color={'gold'} fill={'gold'} />
+              </View>
+              <Text style={{fontSize: 14, fontWeight: 500}}> Check-in</Text>
             </View>
-            <Text style={{fontSize: 14, fontWeight: 500}}> Check-in</Text>
-          </View>
-          <View
-            style={{flexDirection: 'row', alignItems: 'center', columnGap: 15}}>
-            <Text>3/3</Text>
             <View
               style={{
-                padding: 5,
-                backgroundColor: '#c4eae4',
-                borderRadius: 50,
-                justifyContent: 'center',
-                borderWidth: 1,
-                borderColor: 'white',
+                flexDirection: 'row',
+                alignItems: 'center',
+                columnGap: 15,
               }}>
-              <Text
+              <Text>3/3</Text>
+              <View
                 style={{
-                  padding: 3,
-                  backgroundColor: '#fbdfe9',
+                  padding: 5,
+                  backgroundColor: '#c4eae4',
                   borderRadius: 50,
+                  justifyContent: 'center',
+                  borderWidth: 1,
+                  borderColor: 'white',
                 }}>
-                🔥
-              </Text>
+                <Text
+                  style={{
+                    padding: 3,
+                    backgroundColor: '#fbdfe9',
+                    borderRadius: 50,
+                  }}>
+                  🔥
+                </Text>
+              </View>
             </View>
-          </View>
-        </Animated.View>
-      )}
-      <Charts />
-      <Tips />
+          </Animated.View>
+        )}
+        <Charts />
+        <Tips />
+      </ScrollView>
     </Screen>
   );
 }
