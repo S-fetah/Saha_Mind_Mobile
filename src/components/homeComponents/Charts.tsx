@@ -31,7 +31,7 @@ const colors: string[] = [
   '#ffe82b',
   '#eb43af',
 ];
-const scores: number[] = [120, 40, 100, 140, 90];
+const scores: number[] = [121, 40, 100, 140, 90];
 const Times: string[] = ['10:02', '12:10', '15:25', '18:30', '20:45'];
 
 function Place({mood, onfinish}: moodType) {

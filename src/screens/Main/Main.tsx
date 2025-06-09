@@ -16,9 +16,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import HomeScreen from '../Pages/HomeScreen';
-import ProfileScreen from '../Pages/ProfileScreen';
-import ChatScreen from '../Pages/ChatScreen';
+
 import {EventArg} from '@react-navigation/native';
+import Chats from './Chats';
+import Profile from './Profile';
 
 const Tab = createBottomTabNavigator();
 
@@ -31,13 +32,13 @@ const Tabs = [
     icon: Home,
   },
   {
-    name: 'Chat',
-    component: ChatScreen,
+    name: 'Chats',
+    component: Chats,
     icon: MessageCircle,
   },
   {
     name: 'Profile',
-    component: ProfileScreen,
+    component: Profile,
     icon: Settings,
   },
 ];
@@ -53,7 +54,7 @@ const createTabBarIcon =
     (
       <TabIcon
         focused={focused}
-        color={color}
+        color={color ? 'blue' : color}
         size={size}
         icon={Icon}
         name={name}
@@ -69,7 +70,6 @@ const CreateTabBarButton = ({
   name,
   active,
 }: CreateTabBarButtonProps) => {
-  // const isFocused = accessibilityState?.selected;
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
   const activeTab = active.find(e => e.screen === name);
@@ -78,13 +78,13 @@ const CreateTabBarButton = ({
     if (!activeTab?.active) {
       translateY.value = withTiming(-15, {
         duration: 200,
-        easing: Easing.elastic(0),
+        easing: Easing.elastic(1),
         reduceMotion: ReduceMotion.Never,
       });
 
       scale.value = withTiming(1.4, {
         duration: 200,
-        easing: Easing.elastic(0),
+        easing: Easing.elastic(1),
         reduceMotion: ReduceMotion.Never,
       });
 
@@ -125,7 +125,7 @@ const CreateTabBarButton = ({
           fontSize: 10,
           fontWeight: 'bold',
           backgroundColor: 'transparent',
-          color: '#121714',
+          color: activeTab?.active ? 'blue' : '#121714',
         }}>
         {name}
       </Text>
@@ -133,7 +133,7 @@ const CreateTabBarButton = ({
   );
 };
 interface focusType {
-  screen: 'Chat' | 'Home' | 'Profile' | string;
+  screen: string;
   active: boolean;
 }
 
@@ -153,7 +153,7 @@ export default function Main() {
       active: false,
     },
   ]);
-  // Extracted tabPress handler to reduce nesting
+
   const handleTabPress = (
     routeName: string,
     e: EventArg<'tabPress', true, undefined>,
@@ -210,8 +210,9 @@ export default function Main() {
                 fontWeight: 'bold',
                 bottom: -5,
               },
+
               tabBarBadge:
-                tab.name === 'Chat' && badgeNumber > 0
+                tab.name === 'Chats' && badgeNumber > 0
                   ? badgeNumber
                   : undefined,
               tabBarIcon: createTabBarIcon(

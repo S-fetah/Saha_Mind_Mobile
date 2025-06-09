@@ -5,3 +5,12 @@ export type RootStackParams = {
   SecondSignUp: {fullName: string; email: string; birthDate: string};
   Main: undefined;
 };
+
+export type PofileStackParams = {
+  ProfileScreen: undefined;
+  Settings: undefined;
+  Privacy: undefined;
+  Security: undefined;
+  Help: undefined;
+  About: undefined;
+};

@@ -11,6 +11,7 @@ import {
 import profileImage from '../../assets/images/Profile/pp.png';
 import {ChevronRight} from '../../components/chatComponents/LucidIcons';
 import {Screen} from '../../components';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 interface ProfileListItemProps {
   title: string;
@@ -57,14 +58,13 @@ const ProfileListItem = ({
     </TouchableOpacity>
   );
 };
-
-// --- Main Profile Screen Component ---
-const ProfileScreen = () => {
+import {ProfileStackParams} from '../../types';
+type profileScreenProps = NativeStackScreenProps<
+  ProfileStackParams,
+  'ProfileScreen'
+>;
+const ProfileScreen = ({navigation}: profileScreenProps) => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-
-  const handleEditProfile = () => {
-    console.log('Edit Profile pressed!');
-  };
 
   const handleLogout = () => {
     console.log('Log Out pressed!');
@@ -76,9 +76,9 @@ const ProfileScreen = () => {
         <View style={styles.profileImageContainer}>
           <Image source={profileImage} style={styles.profileImage} />
         </View>
-        <Text style={styles.userName}>Sophia Carter</Text>
+        <Text style={styles.userName}>Ali Carter</Text>
         <Text style={styles.joinedText}>Joined 2023</Text>
-        <TouchableOpacity onPress={handleEditProfile}>
+        <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
           <Text style={styles.editProfileText}>Edit Profile</Text>
         </TouchableOpacity>
       </View>
@@ -94,15 +94,21 @@ const ProfileScreen = () => {
         />
         <ProfileListItem
           title="Privacy"
-          onPress={() => console.log('Privacy')}
+          onPress={() => navigation.navigate('Privacy')}
         />
         <ProfileListItem
           title="Security"
-          onPress={() => console.log('Security')}
+          onPress={() => navigation.navigate('Security')}
         />
 
-        <ProfileListItem title="Help" onPress={() => console.log('Help')} />
-        <ProfileListItem title="About" onPress={() => console.log('About')} />
+        <ProfileListItem
+          title="Help"
+          onPress={() => navigation.navigate('Help')}
+        />
+        <ProfileListItem
+          title="About"
+          onPress={() => navigation.navigate('About')}
+        />
       </View>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>

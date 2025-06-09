@@ -10,12 +10,17 @@ type TabIconProps = Readonly<{
   icon: LucideIcon;
 }>;
 
-export default function TabIcon({focused, icon: Icon, width}: TabIconProps) {
+export default function TabIcon({
+  focused,
+  icon: Icon,
+  width,
+  color,
+}: TabIconProps) {
   return (
     <Icon
       size={25}
       style={{width}}
-      color={focused ? 'black' : 'black'}
+      color={focused ? color : 'black'}
       fillOpacity={0.7}
     />
   );

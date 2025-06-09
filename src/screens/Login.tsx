@@ -61,7 +61,7 @@ const Login = ({navigation}: loginProps) => {
         </View>
         <View style={{flexDirection: 'row', marginTop: '1%'}}>
           <Text>Don't have an account?</Text>
-          <Pressable>
+          <Pressable onPress={() => navigation.navigate('Signup')}>
             <Text style={{color: '#4cB3a5'}}> Sign Up</Text>
           </Pressable>
         </View>

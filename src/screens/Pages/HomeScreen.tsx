@@ -26,7 +26,8 @@ const currentWeekDays = Array(7)
   .fill(0)
   .map((_, i) => {
     return DateTime.now().minus({days: i - 3});
-  });
+  })
+  .reverse();
 const WeekDays = () => {
   const [selectedDay, setSelectedDay] = React.useState<string>(
     DateTime.now().day.toString(),
@@ -82,7 +83,6 @@ const WeekDays = () => {
 };
 
 export default function HomeScreen() {
-  const [badgeNumber, setBadgeNumber] = useState<number>(1);
   const [arrow, setArrow] = useState<'up' | 'down'>('down');
   const progress = useSharedValue(0);
 
@@ -129,8 +129,9 @@ export default function HomeScreen() {
             justifyContent: 'space-between',
             flexDirection: 'row',
             marginBottom: 15,
+            marginTop: -15,
           }}>
-          <Text style={{fontSize: 18, fontWeight: '300'}}>Hey,Ali! 👋</Text>
+          <Text style={{fontSize: 18, fontWeight: '400'}}>Hey,Ali! 👋</Text>
           <View style={{flexDirection: 'row', gap: 20}}>
             <TouchableOpacity>
               <Text style={styles.todayStyle}>
@@ -205,7 +206,7 @@ export default function HomeScreen() {
                 alignItems: 'center',
                 columnGap: 15,
               }}>
-              <Text>3/3</Text>
+              <Text>5/5</Text>
               <View
                 style={{
                   padding: 5,

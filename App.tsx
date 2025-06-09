@@ -15,7 +15,6 @@ import Login from './src/screens/Login';
 import Signup from './src/screens/Signup';
 import SecondSignup from './src/screens/SecondSignup';
 import Main from './src/screens/Main/Main';
-
 const Stack = createNativeStackNavigator<RootStackParams>();
 function App(): React.JSX.Element {
   useEffect(() => {

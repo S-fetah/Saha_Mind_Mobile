@@ -13,7 +13,7 @@ import assistant from '../../assets/images/Profile/assisstant.png';
 import {Send} from 'lucide-react-native';
 import {Screen} from '../../components';
 
-const ChatScreen = () => {
+export default function DoctorScreen() {
   const [message, setMessage] = useState<string>('');
 
   const handlePress = () => {
@@ -28,10 +28,9 @@ const ChatScreen = () => {
         <View style={styles.messageRow}>
           <Image source={assistant} style={styles.avatar} />
           <View style={styles.aiBubble}>
-            <Text style={styles.aiName}>AI Assistant</Text>
+            <Text style={styles.aiName}>Doctor Ali</Text>
             <Text style={styles.messageText}>
-              Hi there! I’m here to help you track your mood and provide
-              support. How are you feeling today?
+              Hello there mohamed! How are we feeling today?.
             </Text>
           </View>
         </View>
@@ -39,7 +38,7 @@ const ChatScreen = () => {
         <View style={[styles.messageRow, styles.messageRowUser]}>
           <View style={styles.userBubble}>
             <Text style={styles.userText}>
-              I’m feeling a bit anxious today.
+              hello doctor am actually felling a bit better today!.
             </Text>
           </View>
           <Image source={profileImage} style={styles.avatar} />
@@ -47,27 +46,19 @@ const ChatScreen = () => {
         <View style={styles.messageRow}>
           <Image source={assistant} style={styles.avatar} />
           <View style={styles.aiBubble}>
-            <Text style={styles.aiName}>AI Assistant</Text>
+            <Text style={styles.aiName}>Doctor Ali</Text>
             <Text style={styles.messageText}>
-              It’s okay to feel anxious acknowledging it is a brave first step.
-              You’re not alone, and I’m here for you. If you’d like to talk more
-              or need support, I’m ready to listen.
+              That's good to here , make sure to report back if u experience
+              anything unsual
             </Text>
           </View>
         </View>
 
         <View style={[styles.messageRow, styles.messageRowUser]}>
           <View style={styles.userBubble}>
-            <Text style={styles.userText}>What Can i do ?</Text>
+            <Text style={styles.userText}>okay Doctor Thanks</Text>
           </View>
           <Image source={profileImage} style={styles.avatar} />
-        </View>
-        <View style={styles.messageRow}>
-          <Image source={assistant} style={styles.avatar} />
-          <View style={styles.aiBubble}>
-            <Text style={styles.aiName}>AI Assistant</Text>
-            <Text style={styles.messageText}>...</Text>
-          </View>
         </View>
       </ScrollView>
 
@@ -88,9 +79,8 @@ const ChatScreen = () => {
       </View>
     </Screen>
   );
-};
+}
 
-export default ChatScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -118,7 +108,6 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 100,
     marginTop: '10%',
-    zIndex: 10,
   },
   messageRow: {
     flexDirection: 'row',
@@ -163,7 +152,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     position: 'absolute',
-    bottom: 2,
+    bottom: 20,
     left: 16,
     right: 16,
     backgroundColor: '#e3ece9',

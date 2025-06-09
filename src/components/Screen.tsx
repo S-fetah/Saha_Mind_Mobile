@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   gradientBackground: {
     flex: 1, // Make the gradient fill its parent container
     paddingHorizontal: 16,
-    paddingTop: 32,
+    paddingTop: 30,
     // paddingBottom: 32,
   },
 });
