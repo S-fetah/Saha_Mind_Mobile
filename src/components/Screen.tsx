@@ -6,7 +6,7 @@ type Props = {
   children: React.ReactNode;
   gradient: boolean;
 } & ViewProps;
-
+// ['#f2fbf9', '#e3f5f2']
 const Screen = ({children, style, gradient, ...props}: Props) => {
   const colors = gradient
     ? [
@@ -18,7 +18,7 @@ const Screen = ({children, style, gradient, ...props}: Props) => {
         '#d9f2ee',
         '#f2fbf9',
       ]
-    : ['#f2fbf9', '#e3f5f2'];
+    : ['#fff', '#fff'];
   return (
     <View style={[styles.container, style]} {...props}>
       <LinearGradient

@@ -188,7 +188,8 @@ export default function Main() {
             height: 60,
             borderRadius: 10,
             marginBottom: deviceHeight > 800 ? '6%' : -4,
-            backgroundColor: '#f2fbf9',
+            // backgroundColor: '#f2fbf9',
+            backgroundColor: '#fff',
           },
         }}>
         {Tabs.map(tab => (

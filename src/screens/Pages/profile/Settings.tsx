@@ -1,132 +1,164 @@
 import {
+  Alert,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
-  Pressable,
-  Alert,
-  ScrollView,
 } from 'react-native';
 import React, {useState} from 'react';
 import {Screen} from '../../../components';
-
-export default function Settings() {
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-
-  const handleSave = () => {
-    Alert.alert(
-      '✅ Saved Successfully',
-      `Email: ${email}\nUsername: ${username}`,
-    );
+import {ArrowLeft, ChevronDown, ChevronUp} from 'lucide-react-native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {ProfileStackParams} from '../../../types';
+import Animated, {
+  Easing,
+  interpolate,
+  ReduceMotion,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+type settingType = NativeStackScreenProps<ProfileStackParams, 'Settings'>;
+type editSectionType = {
+  name: string;
+};
+function EditSection({name}: editSectionType) {
+  const [show, setShow] = useState<boolean>(false);
+  const [inputValue, setInputValue] = useState<string>('');
+  const translateY = useSharedValue(0);
+  const toggleShow = () => {
+    setShow(!show);
+    if (show) {
+      translateY.value = withTiming(0, {
+        duration: 300,
+        easing: Easing.inOut(Easing.quad),
+        reduceMotion: ReduceMotion.System,
+      });
+      setTimeout(() => {
+        setShow(!show);
+      }, 150);
+    } else {
+      setShow(!show);
+      translateY.value = withTiming(1, {
+        duration: 300,
+        easing: Easing.inOut(Easing.quad),
+        reduceMotion: ReduceMotion.System,
+      });
+    }
+  };
+  const handleChange = (text: string) => {
+    setInputValue(text);
   };
 
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: translateY.value,
+      transform: [
+        {
+          translateY: interpolate(translateY.value, [0, 1], [-6, 0]),
+        },
+      ],
+      marginBottom: 5,
+      zIndex: 10,
+    };
+  });
   return (
-    <Screen gradient={true}>
-      <ScrollView
-        contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}>
-        <Text style={styles.header}>Account Settings</Text>
-        <Text style={styles.subtext}>
-          Update your account details below. Your changes will be reflected
-          immediately.
+    <View style={{marginBottom: show ? 15 : 25}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingHorizontal: 16,
+          marginTop: 10,
+        }}>
+        <Text
+          style={{
+            fontSize: 16,
+            fontFamily: 'Manrope',
+            lineHeight: 24,
+            fontWeight: 500,
+          }}>
+          {name}
         </Text>
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Username</Text>
+        <TouchableOpacity onPress={toggleShow}>
+          {show ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        </TouchableOpacity>
+      </View>
+      {show && (
+        <Animated.View style={animatedStyle}>
           <TextInput
-            style={styles.input}
-            placeholder="Your preferred username"
-            placeholderTextColor="#777"
-            value={username}
-            onChangeText={setUsername}
+            placeholder={name}
+            value={inputValue}
+            onChangeText={handleChange}
+            style={{
+              width: '100%',
+              height: 50,
+              borderRadius: 24,
+              backgroundColor: '#F2F5F2',
+              marginTop: 15,
+              paddingHorizontal: 16,
+            }}
           />
-        </View>
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Email Address</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="example@yourmail.com"
-            placeholderTextColor="#777"
-            keyboardType="email-address"
-            value={email}
-            onChangeText={setEmail}
-          />
-        </View>
+        </Animated.View>
+      )}
+    </View>
+  );
+}
 
-        <Pressable style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}> Save Changes</Text>
-        </Pressable>
+export default function Settings({navigation}: settingType) {
+  function handlePress() {
+    Alert.alert('Changes Has Been Successfully Unsaved Laddie ');
+  }
+  return (
+    <Screen gradient={false}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <ArrowLeft strokeWidth={1.5} size={26} />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>Edit Profile</Text>
+      </View>
+      <EditSection name="Username" />
+      <EditSection name="Email" />
+      <EditSection name="Phone Number" />
+      <EditSection name="Password" />
 
-        <Text style={styles.footerText}>
-          Make sure to use a valid email so we can reach you for important
-          updates. Your username helps others recognize you across the app.
+      <TouchableOpacity
+        onPress={handlePress}
+        style={{
+          backgroundColor: '#B2E5D1',
+          paddingHorizontal: 16,
+          paddingVertical: 10,
+          alignSelf: 'flex-end',
+          borderRadius: 20,
+        }}>
+        <Text
+          style={{
+            fontSize: 14,
+            lineHeight: 21,
+            fontFamily: 'Manrope',
+            fontWeight: 700,
+          }}>
+          Save Changes
         </Text>
-      </ScrollView>
+      </TouchableOpacity>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    paddingBottom: 40,
-  },
   header: {
-    fontSize: 28,
-    fontWeight: '700',
-    marginBottom: 10,
-    color: '#121714',
-  },
-  subtext: {
-    fontSize: 16,
-    color: '#555',
-    marginBottom: 25,
-    lineHeight: 22,
-  },
-  formGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 15,
-    color: '#333',
-    marginBottom: 6,
-    fontWeight: '500',
-  },
-  input: {
-    height: 48,
-    borderRadius: 10,
-    backgroundColor: '#fff',
-    paddingHorizontal: 14,
-    fontSize: 15,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowOffset: {width: 0, height: 2},
-    shadowRadius: 4,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  saveButton: {
-    marginTop: 10,
-    backgroundColor: '#14a38b', // soft teal-green
-    paddingVertical: 14,
-    borderRadius: 12,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: {width: 0, height: 3},
-    shadowRadius: 6,
-    elevation: 4,
+    marginBottom: '5%',
   },
-  saveButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  footerText: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 30,
-    lineHeight: 20,
+  headerText: {
+    fontSize: 18,
+    fontWeight: '700',
+    fontFamily: 'Manrope',
+    textAlign: 'center',
+    width: '80%',
+    color: '#121714',
   },
 });

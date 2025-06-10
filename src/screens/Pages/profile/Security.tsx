@@ -1,158 +1,200 @@
 import {
+  Dimensions,
+  Image,
+  ImageSourcePropType,
   StyleSheet,
   Text,
-  View,
-  TextInput,
-  Pressable,
-  Alert,
-  ScrollView,
   TouchableOpacity,
+  View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React from 'react';
 import {Screen} from '../../../components';
+import {ArrowLeft} from 'lucide-react-native';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {ProfileStackParams} from '../../../types';
 
-export default function Security() {
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+import encryption from '../../../assets/images/Profile/Vector1.png';
+import storage from '../../../assets/images/Profile/Vector2.png';
+import auth from '../../../assets/images/Profile/Vector3.png';
+import priv from '../../../assets/images/Profile/Vector4.png';
 
-  const handlePasswordChange = () => {
-    if (newPassword !== confirmPassword) {
-      Alert.alert('❌ Passwords do not match');
-    } else {
-      Alert.alert('✅ Password Updated');
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-    }
-  };
+const {height} = Dimensions.get('window');
+type securityPropType = NativeStackScreenProps<ProfileStackParams, 'Security'>;
+type miniSectionPropTypes = {
+  title: string;
+  paragraph: string;
+  icon: ImageSourcePropType;
+};
 
+const securitySettings: miniSectionPropTypes[] = [
+  {
+    title: 'Encyption',
+    paragraph:
+      'Your data is encrypted both in transit and at rest, ensuring it remains confidential.',
+    icon: encryption,
+  },
+  {
+    title: 'Secure Storage',
+    paragraph:
+      'We use secure servers and databases to store your data, minimizing the risk of unauthorized access.',
+    icon: storage,
+  },
+  {
+    title: 'Authentication',
+    paragraph:
+      'We employ strong authentication methods, such as passwords and biometrics, to verify your identity.',
+    icon: auth,
+  },
+  {
+    title: 'Privacy Compliance',
+    paragraph:
+      'We adhere to strict privacy policies and regulations to safeguard your personal information.',
+    icon: priv,
+  },
+];
+
+function MiniSection({title, paragraph, icon}: miniSectionPropTypes) {
   return (
-    <Screen gradient={true}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <Text style={styles.header}>Security</Text>
-
-        <TouchableOpacity style={styles.settingRow}>
-          <Text style={styles.settingLabel}>Two-Factor Authentication</Text>
+    <View
+      style={{
+        flexDirection: 'row',
+        paddingHorizontal: 10,
+        columnGap: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+      <View style={styles.iconView}>
+        <Image source={icon} />
+      </View>
+      <View style={styles.textView}>
+        <Text style={styles.sectionText}>{title}</Text>
+        <Text style={styles.sectionParag}>{paragraph}</Text>
+      </View>
+    </View>
+  );
+}
+export default function Security({navigation}: securityPropType) {
+  return (
+    <Screen gradient={false}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
+          <ArrowLeft strokeWidth={1.5} size={26} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.settingRow}>
-          <Text style={styles.settingLabel}>Face ID / Biometrics</Text>
-        </TouchableOpacity>
+        <Text style={styles.headerText}>Security</Text>
+      </View>
+      <View style={styles.Container}>
+        <Text style={styles.data}>Your Data is safe</Text>
+        <Text style={styles.dataText}>
+          We take your privacy seriously. Here's how we protect your
+          information:
+        </Text>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Change Password</Text>
+        {securitySettings.map(setting => {
+          return (
+            <MiniSection
+              title={setting.title}
+              paragraph={setting.paragraph}
+              icon={setting.icon}
+              key={setting.title}
+            />
+          );
+        })}
 
-          <TextInput
-            style={styles.input}
-            placeholder="Current Password"
-            secureTextEntry
-            placeholderTextColor="#777"
-            value={currentPassword}
-            onChangeText={setCurrentPassword}
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="New Password"
-            secureTextEntry
-            placeholderTextColor="#777"
-            value={newPassword}
-            onChangeText={setNewPassword}
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Confirm New Password"
-            secureTextEntry
-            placeholderTextColor="#777"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-          />
-
-          <Pressable style={styles.saveButton} onPress={handlePasswordChange}>
-            <Text style={styles.saveButtonText}>🔐 Update Password</Text>
-          </Pressable>
-        </View>
-
-        <View style={styles.infoBox}>
-          <Text style={styles.infoText}>
-            You can also enable biometric authentication for faster access and
-            enhanced privacy. Session expires after 30 minutes of inactivity for
-            your protection.
+        <TouchableOpacity
+          style={{
+            backgroundColor: '#1AE594',
+            padding: 10,
+            borderRadius: 24,
+            alignSelf: 'stretch',
+            position: 'absolute',
+            top: height - 220,
+            width: '100%',
+            left: '3%',
+          }}
+          onPress={() => navigation.navigate('ProfileScreen')}>
+          <Text
+            style={{
+              color: '#121714',
+              textAlign: 'center',
+              fontSize: 16,
+              fontWeight: '600',
+              lineHeight: 24,
+            }}>
+            Got it
           </Text>
-        </View>
-      </ScrollView>
+        </TouchableOpacity>
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   header: {
-    fontSize: 26,
-    fontWeight: '700',
-    marginBottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginBottom: '5%',
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: 700,
+    fontFamily: 'Manrope',
+    textAlign: 'center',
+    width: '80%',
     color: '#121714',
   },
-  settingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderColor: '#e5e5e5',
+  Container: {
+    flex: 1,
+    paddingHorizontal: 10,
+    // backgroundColor: 'white',
   },
-  settingLabel: {
-    fontSize: 16,
-    color: '#333',
-    fontWeight: '500',
-  },
-  section: {
-    marginTop: 30,
-  },
-  sectionTitle: {
+  data: {
+    textAlign: 'left',
     fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 12,
-    color: '#222',
+    fontWeight: 700,
+    fontFamily: 'Manrope',
+    marginBottom: 10,
+    color: '#121714',
+    lineHeight: 28,
   },
-  input: {
-    height: 48,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    fontSize: 15,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowOffset: {width: 0, height: 2},
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  saveButton: {
-    marginTop: 10,
-    backgroundColor: '#14a38b',
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-    elevation: 3,
-  },
-  saveButtonText: {
-    color: '#fff',
+  dataText: {
+    textAlign: 'left',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 500,
+    fontFamily: 'Manrope',
+    paddingRight: 3,
+    lineHeight: 22,
+    color: '#121714',
+    marginBottom: 5,
   },
-  infoBox: {
-    marginTop: 30,
-    backgroundColor: '#f0f8f6',
-    padding: 14,
-    borderRadius: 10,
+  iconView: {
+    width: 48,
+    height: 48,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F0F5f2',
+    overflow: 'visible',
   },
-  infoText: {
-    color: '#444',
+  textView: {
+    flex: 1,
+  },
+  sectionText: {
+    textAlign: 'left',
+    fontSize: 16,
+    fontWeight: 500,
+    fontFamily: 'sans-serif-medium',
+    color: '#121714',
+    lineHeight: 24,
+  },
+  sectionParag: {
+    textAlign: 'left',
     fontSize: 14,
-    lineHeight: 20,
+    fontWeight: 400,
+    fontFamily: 'Manrope',
+    marginBottom: 10,
+    color: '#121714',
+    lineHeight: 21,
   },
 });
