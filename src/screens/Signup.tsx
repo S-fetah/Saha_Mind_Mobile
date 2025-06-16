@@ -69,6 +69,13 @@ export default function Signup({navigation}: signUpProps) {
           </TouchableOpacity>
         </View>
       </View>
+      <View
+        style={{flexDirection: 'row', marginTop: '1%', alignSelf: 'center'}}>
+        <Text>Already Have an account?</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <Text style={{color: '#4cB3a5'}}> Sign in </Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }

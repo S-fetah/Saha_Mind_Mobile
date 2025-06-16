@@ -43,7 +43,7 @@ export default function Home({navigation}: HomeScreenProps) {
 
       <View style={styles.guest}>
         <Text>Or</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Main')}>
+        <TouchableOpacity onPress={() => navigation.navigate('GuestMain')}>
           <Text style={styles.guestText}>Continue as a Guest </Text>
         </TouchableOpacity>
       </View>

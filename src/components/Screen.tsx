@@ -1,4 +1,4 @@
-import {View, ViewProps, StyleSheet} from 'react-native';
+import {View, ViewProps, StyleSheet, Dimensions} from 'react-native';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -7,6 +7,8 @@ type Props = {
   gradient: boolean;
 } & ViewProps;
 // ['#f2fbf9', '#e3f5f2']
+
+const {height} = Dimensions.get('window');
 const Screen = ({children, style, gradient, ...props}: Props) => {
   const colors = gradient
     ? [
@@ -40,7 +42,8 @@ const styles = StyleSheet.create({
   gradientBackground: {
     flex: 1, // Make the gradient fill its parent container
     paddingHorizontal: 16,
-    paddingTop: 30,
+    paddingTop: height < 800 ? 15 : 35,
+
     // paddingBottom: 32,
   },
 });

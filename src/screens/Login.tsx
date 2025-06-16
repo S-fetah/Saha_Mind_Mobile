@@ -7,16 +7,61 @@ import {
   Image,
   TouchableOpacity,
   Pressable,
+  Alert,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParams} from '../types';
 import Header from '../components/Header';
 import google from '../assets/images/google.png';
 import facebook from '../assets/images/facebook.png';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {SUPABASE_EMAIL, SUPABASE_PASSWORD} from '@env';
 export type loginProps = NativeStackScreenProps<RootStackParams, 'Login'>;
 
 const Login = ({navigation}: loginProps) => {
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+
+  const validateInputs = () => {
+    if (!email.trim()) return Alert.alert('Email is required ');
+    if (!/\S+@\S+\.\S+/.test(email)) return Alert.alert('Email is invalid❌');
+
+    if (!password.trim()) return Alert.alert('Password is required');
+    if (password.length < 6)
+      return Alert.alert('Password must be at least 6 characters');
+    return null;
+  };
+
+  const handleLogin = async () => {
+    const valid = validateInputs();
+    if (valid !== null) return;
+    console.log('3lii');
+    const response = await fetch(
+      'https://psychology-hazel.vercel.app/api/auth/login',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-supabase-email': SUPABASE_EMAIL,
+          'x-supabase-password': SUPABASE_PASSWORD,
+        },
+        body: JSON.stringify({email, password, type: 'patient'}),
+      },
+    );
+    if (response.ok) {
+      const {token, user} = await response.json();
+      try {
+        await AsyncStorage.multiSet([
+          ['token', token],
+          ['user', JSON.stringify(user)],
+        ]);
+        navigation.navigate('Main');
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <Header name="Log In" />
@@ -32,20 +77,25 @@ const Login = ({navigation}: loginProps) => {
 
       <View style={styles.formContainer}>
         <Text style={styles.inputTitle}>Email </Text>
-        <TextInput placeholder="doctor-123@t.doc.dz" style={styles.Input} />
+        <TextInput
+          placeholder="doctor-123@t.doc.dz"
+          style={styles.Input}
+          value={email}
+          onChangeText={text => setEmail(text)}
+        />
         <Text style={styles.inputTitle}>Password </Text>
         <TextInput
           placeholder="******************"
           style={styles.Input}
           secureTextEntry={true}
+          value={password}
+          onChangeText={text => setPassword(text)}
         />
         <TouchableOpacity style={{alignSelf: 'flex-end'}}>
           <Text>Forgot Password?</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.login}
-          onPress={() => navigation.navigate('Login')}>
+        <TouchableOpacity style={styles.login} onPress={handleLogin}>
           <Text style={styles.loginText}>Login</Text>
         </TouchableOpacity>
       </View>

@@ -7,6 +7,7 @@ import Security from '../Pages/profile/Security';
 import Privacy from '../Pages/profile/Privacy';
 import Help from '../Pages/profile/Help';
 import About from '../Pages/profile/About';
+
 const Stack = createNativeStackNavigator<ProfileStackParams>();
 export default function Profile() {
   return (

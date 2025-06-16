@@ -59,6 +59,8 @@ const ProfileListItem = ({
   );
 };
 import {ProfileStackParams} from '../../types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {CommonActions} from '@react-navigation/native';
 type profileScreenProps = NativeStackScreenProps<
   ProfileStackParams,
   'ProfileScreen'
@@ -66,8 +68,15 @@ type profileScreenProps = NativeStackScreenProps<
 const ProfileScreen = ({navigation}: profileScreenProps) => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
-  const handleLogout = () => {
-    console.log('Log Out pressed!');
+  const handleLogout = async () => {
+    await AsyncStorage.multiRemove(['token', 'user']);
+
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{name: 'Home'}],
+      }),
+    );
   };
 
   return (

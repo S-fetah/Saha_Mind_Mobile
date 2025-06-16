@@ -91,7 +91,6 @@ export default function HomeScreen() {
       progress.value = withTiming(0, {
         duration: 400,
         easing: Easing.inOut(Easing.quad),
-        reduceMotion: ReduceMotion.System,
       });
       setTimeout(() => {
         setArrow('down');
@@ -99,9 +98,8 @@ export default function HomeScreen() {
     } else {
       setArrow('up');
       progress.value = withTiming(1, {
-        duration: 600,
+        duration: 400,
         easing: Easing.inOut(Easing.quad),
-        reduceMotion: ReduceMotion.System,
       });
     }
   };
@@ -111,7 +109,7 @@ export default function HomeScreen() {
       opacity: progress.value,
       transform: [
         {
-          translateY: interpolate(progress.value, [0, 1], [-10, 0]),
+          translateY: interpolate(progress.value, [0, 1], [-5, 0]),
         },
       ],
       marginBottom: 5,

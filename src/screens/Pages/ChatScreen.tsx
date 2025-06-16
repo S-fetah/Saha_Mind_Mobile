@@ -163,9 +163,10 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     position: 'absolute',
-    bottom: 2,
+    bottom: 0,
     left: 16,
     right: 16,
+
     backgroundColor: '#e3ece9',
     borderRadius: 20,
     flexDirection: 'row',

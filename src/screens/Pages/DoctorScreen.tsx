@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     position: 'absolute',
-    bottom: 20,
+
     left: 16,
     right: 16,
     backgroundColor: '#e3ece9',
@@ -162,6 +162,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderWidth: 1,
     height: 50,
+    bottom: 5,
   },
   textInput: {
     flex: 1,

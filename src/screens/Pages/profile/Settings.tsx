@@ -65,23 +65,24 @@ function EditSection({name}: editSectionType) {
   });
   return (
     <View style={{marginBottom: show ? 15 : 25}}>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          paddingHorizontal: 16,
-          marginTop: 10,
-        }}>
-        <Text
+      <View>
+        <TouchableOpacity
+          onPress={toggleShow}
           style={{
-            fontSize: 16,
-            fontFamily: 'Manrope',
-            lineHeight: 24,
-            fontWeight: 500,
+            paddingHorizontal: 16,
+            marginTop: 10,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
           }}>
-          {name}
-        </Text>
-        <TouchableOpacity onPress={toggleShow}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontFamily: 'Manrope',
+              lineHeight: 24,
+              fontWeight: 500,
+            }}>
+            {name}
+          </Text>
           {show ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
         </TouchableOpacity>
       </View>

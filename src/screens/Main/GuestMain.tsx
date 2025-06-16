@@ -5,7 +5,7 @@ import {
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
 import TabIcon from '../../components/TabIcon';
-import {MessageCircle, Settings, LucideIcon, Home} from 'lucide-react-native';
+import {MessageCircle, LucideIcon, Home} from 'lucide-react-native';
 
 import Animated, {
   Easing,
@@ -15,11 +15,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-import HomeScreen from '../Pages/HomeScreen';
-
 import {EventArg} from '@react-navigation/native';
 import Chats from './Chats';
-import Profile from './Profile';
+import GuestHomeScreen from '../Pages/GuestHomeScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -27,19 +25,14 @@ const {width: deviceWidth, height: deviceHeight} = Dimensions.get('window');
 
 const Tabs = [
   {
-    name: 'Home',
-    component: HomeScreen,
+    name: 'Guest',
+    component: (props: any) => <GuestHomeScreen {...props} />,
     icon: Home,
   },
   {
-    name: 'Chats',
+    name: 'Chat',
     component: Chats,
     icon: MessageCircle,
-  },
-  {
-    name: 'Profile',
-    component: Profile,
-    icon: Settings,
   },
 ];
 
@@ -54,7 +47,7 @@ const createTabBarIcon =
     (
       <TabIcon
         focused={focused}
-        color={color ? 'blue' : color}
+        color={focused ? 'blue' : color}
         size={size}
         icon={Icon}
         name={name}
@@ -138,19 +131,15 @@ interface focusType {
   active: boolean;
 }
 
-export default function Main() {
+export default function GuestMain() {
   const [badgeNumber, setBadgeNumber] = useState<number>(3);
   const [focus, setFocus] = useState<focusType[]>([
     {
-      screen: 'Home',
+      screen: 'Guest',
       active: false,
     },
     {
       screen: 'Chat',
-      active: false,
-    },
-    {
-      screen: 'Profile',
       active: false,
     },
   ]);
@@ -163,24 +152,18 @@ export default function Main() {
 
     const initial = [
       {
-        screen: 'Home',
+        screen: 'Guest',
         active: false,
       },
       {
         screen: 'Chat',
         active: false,
       },
-      {
-        screen: 'Profile',
-        active: false,
-      },
     ];
     const filtered = initial.filter(a => a.screen !== routeName);
     filtered.push({screen: routeName, active: true});
     setFocus(filtered);
-    routeName === 'Chats' || routeName === 'Profile'
-      ? setBkColor('#f2fbf9')
-      : setBkColor('#fff');
+    routeName === 'Chat' ? setBkColor('#f2fbf9') : setBkColor('#fff');
   };
 
   return (
@@ -217,7 +200,7 @@ export default function Main() {
               },
 
               tabBarBadge:
-                tab.name === 'Chats' && badgeNumber > 0
+                tab.name === 'Chat' && badgeNumber > 0
                   ? badgeNumber
                   : undefined,
               tabBarIcon: createTabBarIcon(

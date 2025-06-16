@@ -17,3 +17,12 @@ declare module '*.svg' {
   const content: React.FC<SvgProps>;
   export default content;
 }
+declare module '@env' {
+  export const API_BASE: string;
+  export const SUPABASE_URL: string;
+  export const SUPABASE_KEY: string;
+  export const SUPABASE_SERVICE_ROLE_KEY: string;
+  export const SUPABASE_EMAIL: string;
+  export const SUPABASE_PASSWORD: string;
+  export const JWT_SECRET: string;
+}

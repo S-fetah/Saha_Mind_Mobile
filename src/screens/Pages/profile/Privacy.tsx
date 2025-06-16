@@ -79,7 +79,7 @@ export default function Privacy({navigation}: privacyPropTypes) {
         <Text style={styles.headerText}> Privacy Policy</Text>
       </View>
 
-      <ScrollView style={{flex: 1}}>
+      <ScrollView style={{flex: 1}} showsVerticalScrollIndicator={false}>
         {policies.map(policy => {
           return (
             <Policy

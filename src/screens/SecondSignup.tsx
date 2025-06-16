@@ -17,7 +17,7 @@ type SecondSignupProps = NativeStackScreenProps<
   RootStackParams,
   'SecondSignUp'
 >;
-export default function SecondSignup({route}: SecondSignupProps) {
+export default function SecondSignup({navigation, route}: SecondSignupProps) {
   const {fullName, email, birthDate} = route.params;
   console.log(fullName, email, birthDate);
   const [gender, setGender] = useState<string | undefined>('1');
@@ -102,11 +102,12 @@ export default function SecondSignup({route}: SecondSignupProps) {
         onPress={() => console.log('Signup pressed')}>
         <Text style={styles.signupText}>Sign Up</Text>
       </TouchableOpacity>
-      <View style={{flexDirection: 'row', ...styles.terms}}>
-        <Text>already have an account?</Text>
-        <Pressable>
-          <Text style={{color: '#4cB3a5'}}> Log in</Text>
-        </Pressable>
+      <View
+        style={{flexDirection: 'row', marginTop: '1%', alignSelf: 'center'}}>
+        <Text>Already Have an account?</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <Text style={{color: '#4cB3a5'}}> Sign in </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
