@@ -55,7 +55,7 @@ const WeekDays = () => {
     </View>
   );
 };
-type GuestScreenProps = NativeStackScreenProps<RootStackParams, 'Guest'>;
+type GuestScreenProps = NativeStackScreenProps<RootStackParams, 'GuestMain'>;
 export default function GuestHomeScreen({navigation}: GuestScreenProps) {
   return (
     <Screen gradient={false}>
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
     marginBottom: 15,
-    marginTop: StatusBar && StatusBar.currentHeight,
+    marginTop: StatusBar?.currentHeight,
   },
   greetingText: {
     fontSize: 18,

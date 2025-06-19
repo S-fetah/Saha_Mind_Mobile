@@ -1,6 +1,6 @@
 export type RootStackParams = {
   Home: undefined;
-  Login: undefined;
+  Login: {email?: string};
   Signup: undefined;
   SecondSignUp: {fullName: string; email: string; birthDate: string};
   Main: undefined;
@@ -16,6 +16,6 @@ export type ProfileStackParams = {
   About: undefined;
 };
 export type GuestTabParamList = {
-  Guest: undefined;
+  Home: undefined;
   Chat: undefined;
 };

@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   SafeAreaView,
   StyleSheet,
@@ -17,9 +18,37 @@ import google from '../assets/images/google.png';
 import facebook from '../assets/images/facebook.png';
 
 type signUpProps = Readonly<NativeStackScreenProps<RootStackParams, 'Signup'>>;
-
+type dataType = {
+  fullName: string;
+  email: string;
+};
 export default function Signup({navigation}: signUpProps) {
   const [date, setDate] = useState(new Date('2000-01-01'));
+  const [data, setData] = useState<dataType>({
+    fullName: '',
+    email: '',
+  });
+
+  const handlePress = () => {
+    if (data.fullName.length < 5) {
+      return Alert.alert('Pleasee Provide A valid Name ');
+    }
+
+    if (date === new Date('1950-01-01') || date === new Date(2007, 1, 1)) {
+      return Alert.alert('Please Provide A valid Date of Birth ');
+    }
+    if (!/\S+@\S+\.\S+/.test(data.email)) {
+      return Alert.alert(' Email is Invalid ');
+    }
+    navigation.navigate('SecondSignUp', {
+      fullName: data.fullName.trim(),
+      email: data.email.trim(),
+      birthDate:
+        date.getDay().toString() +
+        date.getMonth().toString() +
+        date.getFullYear().toString(),
+    });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -27,11 +56,21 @@ export default function Signup({navigation}: signUpProps) {
 
       <View style={styles.formContainer}>
         <Text style={styles.inputTitle}>Full Name </Text>
-        <TextInput placeholder="John Doe" style={styles.Input} />
+        <TextInput
+          placeholder="John Doe"
+          style={styles.Input}
+          value={data.fullName}
+          onChangeText={text => setData({fullName: text, email: data.email})}
+        />
       </View>
       <View style={styles.formContainer}>
         <Text style={styles.inputTitle}>Email </Text>
-        <TextInput placeholder="Ali@example.com" style={styles.Input} />
+        <TextInput
+          placeholder="Ali@example.com"
+          style={styles.Input}
+          value={data.email}
+          onChangeText={text => setData({fullName: data.fullName, email: text})}
+        />
       </View>
       <View style={styles.formContainer}>
         <Text style={styles.inputTitle}>Date Of Birth </Text>
@@ -46,15 +85,7 @@ export default function Signup({navigation}: signUpProps) {
         />
       </View>
 
-      <TouchableOpacity
-        style={styles.signup}
-        onPress={() =>
-          navigation.navigate('SecondSignUp', {
-            fullName: 'kda',
-            email: 'kda',
-            birthDate: 'kda',
-          })
-        }>
+      <TouchableOpacity style={styles.signup} onPress={handlePress}>
         <Text style={styles.signupText}>Continue</Text>
       </TouchableOpacity>
 
@@ -72,7 +103,7 @@ export default function Signup({navigation}: signUpProps) {
       <View
         style={{flexDirection: 'row', marginTop: '1%', alignSelf: 'center'}}>
         <Text>Already Have an account?</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Login', {})}>
           <Text style={{color: '#4cB3a5'}}> Sign in </Text>
         </TouchableOpacity>
       </View>

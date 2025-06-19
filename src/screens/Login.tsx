@@ -19,8 +19,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SUPABASE_EMAIL, SUPABASE_PASSWORD} from '@env';
 export type loginProps = NativeStackScreenProps<RootStackParams, 'Login'>;
 
-const Login = ({navigation}: loginProps) => {
-  const [email, setEmail] = useState<string>('');
+const Login = ({navigation, route}: loginProps) => {
+  const [email, setEmail] = useState<string>(route.params?.email || '');
   const [password, setPassword] = useState<string>('');
 
   const validateInputs = () => {
@@ -28,7 +28,7 @@ const Login = ({navigation}: loginProps) => {
     if (!/\S+@\S+\.\S+/.test(email)) return Alert.alert('Email is invalid❌');
 
     if (!password.trim()) return Alert.alert('Password is required');
-    if (password.length < 6)
+    if (password.length < 5)
       return Alert.alert('Password must be at least 6 characters');
     return null;
   };
@@ -36,7 +36,7 @@ const Login = ({navigation}: loginProps) => {
   const handleLogin = async () => {
     const valid = validateInputs();
     if (valid !== null) return;
-    console.log('3lii');
+
     const response = await fetch(
       'https://psychology-hazel.vercel.app/api/auth/login',
       {
@@ -51,6 +51,7 @@ const Login = ({navigation}: loginProps) => {
     );
     if (response.ok) {
       const {token, user} = await response.json();
+      console.log(response.json());
       try {
         await AsyncStorage.multiSet([
           ['token', token],

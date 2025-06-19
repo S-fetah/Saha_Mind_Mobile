@@ -18,15 +18,20 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {EventArg} from '@react-navigation/native';
 import Chats from './Chats';
 import GuestHomeScreen from '../Pages/GuestHomeScreen';
+import {GuestTabParamList} from '../../types';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<GuestTabParamList>();
 
 const {width: deviceWidth, height: deviceHeight} = Dimensions.get('window');
 
-const Tabs = [
+const Tabs: {
+  name: keyof GuestTabParamList;
+  component: React.ComponentType<any>;
+  icon: LucideIcon;
+}[] = [
   {
-    name: 'Guest',
-    component: (props: any) => <GuestHomeScreen {...props} />,
+    name: 'Home',
+    component: GuestHomeScreen,
     icon: Home,
   },
   {

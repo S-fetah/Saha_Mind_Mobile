@@ -7,7 +7,7 @@ import Security from '../Pages/profile/Security';
 import Privacy from '../Pages/profile/Privacy';
 import Help from '../Pages/profile/Help';
 import About from '../Pages/profile/About';
-
+import Home from '../Home';
 const Stack = createNativeStackNavigator<ProfileStackParams>();
 export default function Profile() {
   return (
@@ -20,6 +20,7 @@ export default function Profile() {
       <Stack.Screen name="Privacy" component={Privacy} />
       <Stack.Screen name="Security" component={Security} />
       <Stack.Screen name="Settings" component={Settings} />
+      <Stack.Screen name="Home" component={Home} />
     </Stack.Navigator>
   );
 }

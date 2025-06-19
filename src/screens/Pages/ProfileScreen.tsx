@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   View,
   Text,
@@ -60,14 +60,26 @@ const ProfileListItem = ({
 };
 import {ProfileStackParams} from '../../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {CommonActions} from '@react-navigation/native';
+import {CommonActions, useFocusEffect} from '@react-navigation/native';
 type profileScreenProps = NativeStackScreenProps<
   ProfileStackParams,
   'ProfileScreen'
 >;
-const ProfileScreen = ({navigation}: profileScreenProps) => {
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
+type userType = {
+  id: number;
+  name: string;
+  joined: string;
+};
+const ProfileScreen = ({navigation}: profileScreenProps) => {
+  const [notificationsEnabled, setNotificationsEnabled] =
+    useState<boolean>(false);
+
+  const [userInfo, setUserInfo] = useState<userType>({
+    id: 0,
+    name: 'User User',
+    joined: '',
+  });
   const handleLogout = async () => {
     await AsyncStorage.multiRemove(['token', 'user']);
 
@@ -78,15 +90,37 @@ const ProfileScreen = ({navigation}: profileScreenProps) => {
       }),
     );
   };
-
+  const GetName = async () => {
+    try {
+      const storedName = await AsyncStorage.getItem('user');
+      const parsedName = storedName ? JSON.parse(storedName) : null;
+      console.log('Parsed Name:', parsedName);
+      if (parsedName) {
+        setUserInfo({
+          id: parsedName.id,
+          name: parsedName.fullName,
+          joined: parsedName.created_at.split('T')[0],
+        });
+      }
+      return;
+    } catch (error) {
+      console.error('Error retrieving name from AsyncStorage:', error);
+    }
+  };
+  useFocusEffect(
+    useCallback(() => {
+      GetName();
+    }, []),
+  );
   return (
     <Screen gradient={true}>
       <View style={styles.profileInfoContainer}>
         <View style={styles.profileImageContainer}>
           <Image source={profileImage} style={styles.profileImage} />
         </View>
-        <Text style={styles.userName}>Ali Carter</Text>
-        <Text style={styles.joinedText}>Joined 2023</Text>
+        <Text style={styles.userName}>{userInfo.name}</Text>
+        <Text style={styles.joinedText}>Id : {userInfo.id}</Text>
+        <Text style={styles.joinedText}>Joined {userInfo.joined}</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
           <Text style={styles.editProfileText}>Edit Profile</Text>
         </TouchableOpacity>
@@ -183,7 +217,7 @@ const styles = StyleSheet.create({
   joinedText: {
     fontSize: 14,
     color: '#777',
-    marginBottom: 10,
+    marginBottom: 5,
   },
   editProfileText: {
     fontSize: 16,

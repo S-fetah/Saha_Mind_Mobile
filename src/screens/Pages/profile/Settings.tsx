@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Screen} from '../../../components';
 import {ArrowLeft, ChevronDown, ChevronUp} from 'lucide-react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -19,11 +19,14 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import {useFocusEffect} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 type settingType = NativeStackScreenProps<ProfileStackParams, 'Settings'>;
 type editSectionType = {
   name: string;
+  placeholder?: string;
 };
-function EditSection({name}: editSectionType) {
+function EditSection({name, placeholder}: editSectionType) {
   const [show, setShow] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>('');
   const translateY = useSharedValue(0);
@@ -89,7 +92,7 @@ function EditSection({name}: editSectionType) {
       {show && (
         <Animated.View style={animatedStyle}>
           <TextInput
-            placeholder={name}
+            placeholder={placeholder ? placeholder : name}
             value={inputValue}
             onChangeText={handleChange}
             style={{
@@ -106,8 +109,33 @@ function EditSection({name}: editSectionType) {
     </View>
   );
 }
-
+type dataType = {
+  fullName: string;
+  email: string;
+  phoneNumber?: string;
+};
 export default function Settings({navigation}: settingType) {
+  const [data, setData] = useState<dataType>({
+    fullName: 'User Name',
+    email: '',
+    phoneNumber: '',
+  });
+  async function GetData() {
+    const info = await AsyncStorage.getItem('user');
+    const parsedInfo = info ? JSON.parse(info) : null;
+    if (parsedInfo) {
+      setData({
+        fullName: parsedInfo.fullName,
+        email: parsedInfo.email,
+        phoneNumber: parsedInfo.phoneNumber || '',
+      });
+    }
+  }
+  useFocusEffect(
+    useCallback(() => {
+      GetData();
+    }, []),
+  );
   function handlePress() {
     Alert.alert('Changes Has Been Successfully Unsaved Laddie ');
   }
@@ -119,8 +147,8 @@ export default function Settings({navigation}: settingType) {
         </TouchableOpacity>
         <Text style={styles.headerText}>Edit Profile</Text>
       </View>
-      <EditSection name="Username" />
-      <EditSection name="Email" />
+      <EditSection name="Username" placeholder={data.fullName} />
+      <EditSection name="Email" placeholder={data.email} />
       <EditSection name="Phone Number" />
       <EditSection name="Password" />
 

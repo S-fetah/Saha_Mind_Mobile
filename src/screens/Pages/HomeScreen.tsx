@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   Image,
   ScrollView,
@@ -15,12 +15,13 @@ import Charts from '../../components/homeComponents/Charts';
 import Animated, {
   Easing,
   interpolate,
-  ReduceMotion,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 import Tips from '../../components/homeComponents/Tips';
+import {useFocusEffect} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const currentWeekDays = Array(7)
   .fill(0)
@@ -85,6 +86,25 @@ const WeekDays = () => {
 export default function HomeScreen() {
   const [arrow, setArrow] = useState<'up' | 'down'>('down');
   const progress = useSharedValue(0);
+  const [name, setName] = useState<string>('');
+  const GetName = async () => {
+    try {
+      const storedName = await AsyncStorage.getItem('user');
+      const parsedName = storedName ? JSON.parse(storedName) : null;
+      if (parsedName.fullName) {
+        setName(parsedName.fullName);
+      } else {
+        setName('Guest');
+      }
+    } catch (error) {
+      console.error('Error retrieving name from AsyncStorage:', error);
+    }
+  };
+  useFocusEffect(
+    useCallback(() => {
+      GetName();
+    }, []),
+  );
 
   const toggleCheckins = () => {
     if (arrow === 'up') {
@@ -129,7 +149,7 @@ export default function HomeScreen() {
             marginBottom: 15,
             marginTop: -15,
           }}>
-          <Text style={{fontSize: 18, fontWeight: '400'}}>Hey,Ali! 👋</Text>
+          <Text style={{fontSize: 18, fontWeight: '400'}}>Hey,{name} 👋</Text>
           <View style={{flexDirection: 'row', gap: 20}}>
             <TouchableOpacity>
               <Text style={styles.todayStyle}>

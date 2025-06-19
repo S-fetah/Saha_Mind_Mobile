@@ -14,7 +14,6 @@ export default function Chats() {
   const checkAuth = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      console.log('Token exists:', token !== null);
       setAuthed(token !== null);
     } catch (error) {
       console.error('Failed to get token:', error);

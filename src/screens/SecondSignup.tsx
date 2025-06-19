@@ -1,5 +1,5 @@
 import {
-  Pressable,
+  Alert,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -13,6 +13,7 @@ import Header from '../components/Header';
 import {RadioGroup} from 'react-native-radio-buttons-group';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParams} from '../types';
+import {SUPABASE_EMAIL, SUPABASE_PASSWORD} from '@env';
 type SecondSignupProps = NativeStackScreenProps<
   RootStackParams,
   'SecondSignUp'
@@ -22,6 +23,7 @@ export default function SecondSignup({navigation, route}: SecondSignupProps) {
   console.log(fullName, email, birthDate);
   const [gender, setGender] = useState<string | undefined>('1');
   const [role, setRole] = useState<string | undefined>('2');
+  const [password, setPassword] = useState<string>('');
   const radioButton = useMemo(
     () => [
       {
@@ -52,6 +54,54 @@ export default function SecondSignup({navigation, route}: SecondSignupProps) {
     ],
     [],
   );
+  const HandleSignup = async () => {
+    if (password.length < 5) {
+      return Alert.alert('Please Enter A Longer Password');
+    }
+    console.log(SUPABASE_EMAIL);
+    console.log(SUPABASE_PASSWORD);
+    console.log(
+      JSON.stringify({
+        fillname: fullName,
+        email,
+        password,
+        type: 'patient',
+      }),
+    );
+    try {
+      const response = await fetch(
+        'https://psychology-hazel.vercel.app//api/auth/signup',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-supabase-email': SUPABASE_EMAIL,
+            'x-supabase-password': SUPABASE_PASSWORD,
+          },
+          body: JSON.stringify({
+            fullName,
+            email,
+            password,
+            type: 'patient',
+          }),
+        },
+      );
+      console.log(response);
+      if (response.ok) {
+        const {patient} = await response.json();
+        console.log(response.json());
+        console.log(patient);
+        try {
+          navigation.navigate('Login', {email});
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Header name="Set Password" />
@@ -62,6 +112,8 @@ export default function SecondSignup({navigation, route}: SecondSignupProps) {
           placeholder="****************"
           style={styles.Input}
           secureTextEntry={true}
+          value={password}
+          onChangeText={text => setPassword(text)}
         />
       </View>
       <View style={styles.formContainer}>
@@ -97,15 +149,13 @@ export default function SecondSignup({navigation, route}: SecondSignupProps) {
           <Text style={{color: '#4cB3a5'}}> Privacy Policy</Text>.
         </Text>
       </View>
-      <TouchableOpacity
-        style={styles.signup}
-        onPress={() => console.log('Signup pressed')}>
+      <TouchableOpacity style={styles.signup} onPress={HandleSignup}>
         <Text style={styles.signupText}>Sign Up</Text>
       </TouchableOpacity>
       <View
         style={{flexDirection: 'row', marginTop: '1%', alignSelf: 'center'}}>
         <Text>Already Have an account?</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Login', {})}>
           <Text style={{color: '#4cB3a5'}}> Sign in </Text>
         </TouchableOpacity>
       </View>
