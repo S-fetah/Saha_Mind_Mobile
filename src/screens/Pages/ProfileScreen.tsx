@@ -8,7 +8,7 @@ import {
   Switch,
   Platform,
 } from 'react-native';
-import profileImage from '../../assets/images/Profile/pp.png';
+import profileImage from '../../assets/images/Profile/dev2.png';
 import {ChevronRight} from '../../components/chatComponents/LucidIcons';
 import {Screen} from '../../components';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -86,7 +86,7 @@ const ProfileScreen = ({navigation}: profileScreenProps) => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [{name: 'Home'}],
+        routes: [{name: 'GuestMain'}],
       }),
     );
   };
@@ -94,7 +94,7 @@ const ProfileScreen = ({navigation}: profileScreenProps) => {
     try {
       const storedName = await AsyncStorage.getItem('user');
       const parsedName = storedName ? JSON.parse(storedName) : null;
-      console.log('Parsed Name:', parsedName);
+      // console.log('Parsed Name:', parsedName);
       if (parsedName) {
         setUserInfo({
           id: parsedName.id,
@@ -120,15 +120,28 @@ const ProfileScreen = ({navigation}: profileScreenProps) => {
         </View>
         <Text style={styles.userName}>{userInfo.name}</Text>
         <Text style={styles.joinedText}>Id : {userInfo.id}</Text>
-        <Text style={styles.joinedText}>Joined {userInfo.joined}</Text>
+
         <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
           <Text style={styles.editProfileText}>Edit Profile</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.settingsSection}>
-        <Text style={styles.settingsTitle}>Settings</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+          <Text style={styles.settingsTitle}>Settings</Text>
+          <Text style={styles.joinedText}>Joined {userInfo.joined}</Text>
+        </View>
 
+        <ProfileListItem
+          title="History"
+          isSwitch={false}
+          onPress={() => navigation.navigate('History')}
+        />
         <ProfileListItem
           title="Notifications"
           isSwitch={true}
@@ -225,7 +238,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   settingsSection: {
-    marginTop: -15,
+    marginTop: -35,
     paddingHorizontal: 20,
     borderRadius: 10,
     marginHorizontal: 15,

@@ -11,6 +11,10 @@ declare module '*.gif' {
   const value: ImageSourcePropType;
   export default value;
 }
+declare module '*.jpeg' {
+  const value: ImageSourcePropType;
+  export default value;
+}
 declare module '*.svg' {
   import React from 'react';
   import {SvgProps} from 'react-native-svg';

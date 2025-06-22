@@ -14,6 +14,7 @@ export type ProfileStackParams = {
   Security: undefined;
   Help: undefined;
   About: undefined;
+  History: undefined;
 };
 export type GuestTabParamList = {
   Home: undefined;

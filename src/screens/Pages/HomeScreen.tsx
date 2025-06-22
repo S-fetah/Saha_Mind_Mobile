@@ -1,6 +1,7 @@
 import React, {useCallback, useState} from 'react';
 import {
   Image,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -22,6 +23,7 @@ import Animated, {
 import Tips from '../../components/homeComponents/Tips';
 import {useFocusEffect} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import appLogo from '../../assets/images/Profile/appointment.jpeg';
 
 const currentWeekDays = Array(7)
   .fill(0)
@@ -82,15 +84,45 @@ const WeekDays = () => {
     </View>
   );
 };
-
+type appointmentDetailsType = {
+  id?: number;
+  doctor_id?: number;
+  patient_id: number;
+  date: string;
+  hour: string;
+};
 export default function HomeScreen() {
   const [arrow, setArrow] = useState<'up' | 'down'>('down');
   const progress = useSharedValue(0);
   const [name, setName] = useState<string>('');
+  const [app, setApp] = useState(DateTime.now().toFormat('ccc, dd LLL '));
+  const [appDetails, setAppDetails] = useState<appointmentDetailsType | null>(
+    null,
+  );
+  const [showAppointment, setShowAppointment] = useState<boolean>(false);
   const GetName = async () => {
     try {
+      const token = await AsyncStorage.getItem('token');
+
       const storedName = await AsyncStorage.getItem('user');
       const parsedName = storedName ? JSON.parse(storedName) : null;
+      const appointment = await fetch(
+        'https://psychology-hazel.vercel.app/api/appointments',
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      if (appointment.ok) {
+        const appointmentDay = await appointment.json();
+
+        const date = DateTime.fromISO(appointmentDay.appointments[0].date);
+        const formatted = date.toFormat('ccc, dd LLL');
+        setAppDetails(appointmentDay.appointments[0]);
+        setApp(formatted);
+      }
       if (parsedName.fullName) {
         setName(parsedName.fullName);
       } else {
@@ -138,6 +170,24 @@ export default function HomeScreen() {
   });
   return (
     <Screen gradient={false}>
+      {showAppointment && (
+        <Modal transparent={true} animationType="fade">
+          <View style={styles.modalBackdrop}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Image source={appLogo} style={styles.modalImage} />
+                <Text style={styles.modalTitle}>Appointment</Text>
+              </View>
+              <Text style={styles.modalText}>🗓 {app}</Text>
+              <Text style={styles.modalText}>⏰ {appDetails?.hour}</Text>
+              <TouchableOpacity onPress={() => setShowAppointment(false)}>
+                <Text style={styles.modalClose}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
+
       <ScrollView showsVerticalScrollIndicator={false} style={{flex: 1}}>
         <View
           style={{
@@ -151,10 +201,12 @@ export default function HomeScreen() {
           }}>
           <Text style={{fontSize: 18, fontWeight: '400'}}>Hey,{name} 👋</Text>
           <View style={{flexDirection: 'row', gap: 20}}>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setShowAppointment(!showAppointment);
+              }}>
               <Text style={styles.todayStyle}>
-                {DateTime.now().toFormat('ccc, dd LLL ')}{' '}
-                <Calendar1 size={18} />{' '}
+                {app + ' '} <Calendar1 size={18} />
               </Text>
             </TouchableOpacity>
             <TouchableOpacity>
@@ -333,5 +385,48 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 15,
     alignItems: 'center',
+  },
+  modalBackdrop: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 16,
+    width: '80%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  modalImage: {
+    height: 50,
+    width: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  modalText: {
+    fontSize: 16,
+    marginTop: 5,
+  },
+  modalClose: {
+    marginTop: 15,
+    fontSize: 14,
+    color: '#007BFF',
+    fontWeight: 'bold',
   },
 });

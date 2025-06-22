@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -7,71 +7,114 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Dimensions,
+  Platform,
+  Keyboard,
+  ActivityIndicator,
 } from 'react-native';
 import profileImage from '../../assets/images/Profile/pp.png';
 import assistant from '../../assets/images/Profile/assisstant.png';
 import {Send} from 'lucide-react-native';
 import {Screen} from '../../components';
+import useChatStorage from '../../Context/useChatStorage';
 
 const ChatScreen = () => {
-  const [message, setMessage] = useState<string>('');
+  // const [messages, setMessages] = useState<messageType[]>([
+  //   {
+  //     name: 'user',
+  //     text: 'I’m feeling a bit anxious today.',
+  //   },
+  //   {
+  //     name: 'Ai Assistant',
+  //     text: 'It’s okay to feel anxious acknowledging it is a brave first step.You’re not alone, and I’m here for you. If you’d like to talk more or need support, I’m ready to listen.',
+  //   },
+  //   {
+  //     name: 'user',
+  //     text: 'What Can i do ?',
+  //   },
+  //   {
+  //     name: 'Ai Assistant',
+  //     text: '...',
+  //   },
+  // ]);
 
-  const handlePress = () => {
-    console.log('message is : ', message);
-  };
+  const {messages, addMessage, loading, saveMessages} = useChatStorage();
+  const [message, setMessage] = useState<string>('');
+  const scrollToEnd = useRef<ScrollView>(null);
+
   const handleChange = (text: string) => {
     setMessage(text);
   };
+  const handlePress = () => {
+    if (message.trim() === ' ') return;
+    addMessage({name: 'user', text: message});
+    saveMessages([...messages, {name: 'user', text: message}]);
+
+    setMessage('');
+    Keyboard.dismiss();
+
+    setTimeout(() => {
+      scrollToEnd.current?.scrollToEnd({animated: true});
+    }, 100);
+  };
+  if (loading) {
+    return (
+      <Screen gradient={true}>
+        <ActivityIndicator
+          size="large"
+          color="#0000ff"
+          style={{flex: 1, justifyContent: 'center'}}
+        />
+      </Screen>
+    );
+  }
   return (
     <Screen gradient={true}>
-      <ScrollView contentContainerStyle={styles.chatContainer}>
+      <ScrollView
+        contentContainerStyle={styles.chatContainer}
+        ref={scrollToEnd}
+        onContentSizeChange={() =>
+          scrollToEnd.current?.scrollToEnd({animated: true})
+        }>
         <View style={styles.messageRow}>
           <Image source={assistant} style={styles.avatar} />
           <View style={styles.aiBubble}>
             <Text style={styles.aiName}>AI Assistant</Text>
             <Text style={styles.messageText}>
-              Hi there! I’m here to help you track your mood and provide
-              support. How are you feeling today?
+              Hi there!How are you feeling today?
             </Text>
           </View>
         </View>
 
-        <View style={[styles.messageRow, styles.messageRowUser]}>
-          <View style={styles.userBubble}>
-            <Text style={styles.userText}>
-              I’m feeling a bit anxious today.
-            </Text>
-          </View>
-          <Image source={profileImage} style={styles.avatar} />
-        </View>
-        <View style={styles.messageRow}>
-          <Image source={assistant} style={styles.avatar} />
-          <View style={styles.aiBubble}>
-            <Text style={styles.aiName}>AI Assistant</Text>
-            <Text style={styles.messageText}>
-              It’s okay to feel anxious acknowledging it is a brave first step.
-              You’re not alone, and I’m here for you. If you’d like to talk more
-              or need support, I’m ready to listen.
-            </Text>
-          </View>
-        </View>
-
-        <View style={[styles.messageRow, styles.messageRowUser]}>
-          <View style={styles.userBubble}>
-            <Text style={styles.userText}>What Can i do ?</Text>
-          </View>
-          <Image source={profileImage} style={styles.avatar} />
-        </View>
-        <View style={styles.messageRow}>
-          <Image source={assistant} style={styles.avatar} />
-          <View style={styles.aiBubble}>
-            <Text style={styles.aiName}>AI Assistant</Text>
-            <Text style={styles.messageText}>...</Text>
-          </View>
-        </View>
+        {messages.map(ele => {
+          if (ele.name === 'Ai Assistant') {
+            return (
+              <View style={styles.messageRow} key={ele.text}>
+                <Image source={assistant} style={styles.avatar} />
+                <View style={styles.aiBubble}>
+                  <Text style={styles.aiName}>AI Assistant</Text>
+                  <Text style={styles.messageText}>{ele.text}</Text>
+                </View>
+              </View>
+            );
+          }
+          return (
+            <View
+              style={[styles.messageRow, styles.messageRowUser]}
+              key={ele.text}>
+              <View style={styles.userBubble}>
+                <Text style={styles.userText}>{ele.text}</Text>
+              </View>
+              <Image source={profileImage} style={styles.avatar} />
+            </View>
+          );
+        })}
       </ScrollView>
-
-      <View style={styles.inputContainer}>
+      <KeyboardAvoidingView
+        behavior="padding"
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 50}
+        style={styles.inputContainer}>
         <TextInput
           placeholder="Message"
           placeholderTextColor="#7A9E9F"
@@ -80,12 +123,10 @@ const ChatScreen = () => {
           value={message}
         />
 
-        <TouchableOpacity onPress={handlePress}>
-          <Text style={styles.imageIcon}>
-            <Send size={25} />
-          </Text>
+        <TouchableOpacity onPress={handlePress} style={styles.imageIcon}>
+          <Send size={25} />
         </TouchableOpacity>
-      </View>
+      </KeyboardAvoidingView>
     </Screen>
   );
 };
@@ -115,7 +156,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   chatContainer: {
-    padding: 16,
+    flexGrow: 1,
     paddingBottom: 100,
     marginTop: '10%',
     zIndex: 10,
@@ -162,29 +203,25 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   inputContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 16,
-    right: 16,
-
-    backgroundColor: '#e3ece9',
-    borderRadius: 20,
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    height: 50,
   },
   textInput: {
-    flex: 1,
     fontSize: 15,
     color: '#333',
+    backgroundColor: '#e3ece9',
+    flex: 1,
+    height: 45,
+    borderRadius: 20,
+    borderWidth: 1,
+    textAlign: 'left',
+    paddingLeft: 20,
   },
   imageIcon: {
     fontSize: 20,
-    marginLeft: 18,
-    width: 30,
-
     paddingLeft: 8,
+    position: 'absolute',
+    top: 10,
+    left: Dimensions.get('window').width - 110,
+    alignSelf: 'center',
   },
 });

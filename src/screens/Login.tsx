@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   Pressable,
   Alert,
+  Modal,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useState} from 'react';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -17,11 +19,13 @@ import google from '../assets/images/google.png';
 import facebook from '../assets/images/facebook.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SUPABASE_EMAIL, SUPABASE_PASSWORD} from '@env';
+import {Activity} from 'lucide-react-native';
 export type loginProps = NativeStackScreenProps<RootStackParams, 'Login'>;
 
 const Login = ({navigation, route}: loginProps) => {
   const [email, setEmail] = useState<string>(route.params?.email || '');
   const [password, setPassword] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
   const validateInputs = () => {
     if (!email.trim()) return Alert.alert('Email is required ');
@@ -34,8 +38,12 @@ const Login = ({navigation, route}: loginProps) => {
   };
 
   const handleLogin = async () => {
+    setLoading(true);
     const valid = validateInputs();
-    if (valid !== null) return;
+    if (valid !== null) {
+      setLoading(false);
+      return;
+    }
 
     const response = await fetch(
       'https://psychology-hazel.vercel.app/api/auth/login',
@@ -58,13 +66,34 @@ const Login = ({navigation, route}: loginProps) => {
           ['user', JSON.stringify(user)],
         ]);
         navigation.navigate('Main');
+        setLoading(false);
       } catch (err) {
         console.log(err);
       }
+    } else {
+      Alert.alert('Wrong credentials please try again!');
     }
   };
   return (
     <SafeAreaView style={styles.container}>
+      {loading && (
+        <Modal transparent={true} animationType="fade">
+          <View style={styles.modalBackdrop}>
+            <View style={styles.modalContent}>
+              <ActivityIndicator size="large" color="#4cB3a5" />
+              <TouchableOpacity
+                style={{
+                  alignSelf: 'center',
+                  marginTop: 10,
+                }}
+                onPress={() => setLoading(false)}>
+                <Text style={{right: -140, top: -55}}>❌</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
+
       <Header name="Log In" />
       <View style={styles.textContainer}>
         <Text style={styles.welcome}>Welcome Back!</Text>
@@ -194,5 +223,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 50,
+  },
+  modalBackdrop: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 16,
+    width: '80%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });

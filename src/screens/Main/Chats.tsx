@@ -10,11 +10,15 @@ const Tab = createMaterialTopTabNavigator();
 
 export default function Chats() {
   const [authed, setAuthed] = useState<boolean | null>(null);
-
+  const [hasDoctor, setHasDoctor] = useState<boolean | null>(false);
   const checkAuth = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
+      const user = await AsyncStorage.getItem('user');
+      const parsedUser = user ? JSON.parse(user) : null;
       setAuthed(token !== null);
+
+      setHasDoctor(parsedUser?.doctor_id);
     } catch (error) {
       console.error('Failed to get token:', error);
       setAuthed(false);
@@ -26,8 +30,6 @@ export default function Chats() {
       checkAuth();
     }, []),
   );
-
-  // Don't render until auth state is determined
   if (authed === null) return null;
 
   const tabScreens = [
@@ -35,6 +37,7 @@ export default function Chats() {
     ...(authed ? [{name: 'Doctor', component: DoctorScreen}] : []),
   ];
 
+  console.log(hasDoctor); // && hasDoctor
   return (
     <Screen gradient={true}>
       <Tab.Navigator

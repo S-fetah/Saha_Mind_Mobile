@@ -1,5 +1,5 @@
 import {Text, Dimensions, Pressable, GestureResponderEvent} from 'react-native';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   BottomTabBarButtonProps,
   createBottomTabNavigator,
@@ -17,9 +17,16 @@ import Animated, {
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import HomeScreen from '../Pages/HomeScreen';
 
-import {EventArg} from '@react-navigation/native';
+import {
+  EventArg,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
 import Chats from './Chats';
 import Profile from './Profile';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParams} from '../../types';
 
 const Tab = createBottomTabNavigator();
 
@@ -139,6 +146,8 @@ interface focusType {
 }
 
 export default function Main() {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParams>>();
   const [badgeNumber, setBadgeNumber] = useState<number>(3);
   const [focus, setFocus] = useState<focusType[]>([
     {
@@ -155,6 +164,8 @@ export default function Main() {
     },
   ]);
   const [bkColor, setBkColor] = useState<'#f2fbf9' | '#fff'>('#fff');
+  const [authed, setAuthed] = useState<boolean>(true);
+
   const handleTabPress = (
     routeName: string,
     e: EventArg<'tabPress', true, undefined>,
@@ -182,6 +193,23 @@ export default function Main() {
       ? setBkColor('#f2fbf9')
       : setBkColor('#fff');
   };
+  const checkAuthed = async () => {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) {
+      setAuthed(false);
+    }
+  };
+  useFocusEffect(
+    useCallback(() => {
+      checkAuthed;
+    }, []),
+  );
+  if (!authed) {
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Home'}],
+    });
+  }
 
   return (
     <SafeAreaProvider>
