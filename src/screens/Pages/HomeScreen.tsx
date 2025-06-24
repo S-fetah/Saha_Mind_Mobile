@@ -31,10 +31,45 @@ const currentWeekDays = Array(7)
     return DateTime.now().minus({days: i - 3});
   })
   .reverse();
-const WeekDays = () => {
+type weekDaysType = {
+  overallMoods: moodlistType[];
+  invokeChange: (day: string) => void;
+};
+const WeekDays = ({overallMoods, invokeChange}: weekDaysType) => {
   const [selectedDay, setSelectedDay] = React.useState<string>(
     DateTime.now().day.toString(),
   );
+
+  const detectMood = (mood: string) => {
+    switch (mood.toLowerCase()) {
+      case 'shy':
+        return fellings[0];
+
+      case 'presevative':
+        return fellings[1];
+      case 'happy':
+        return fellings[2];
+      case 'angry':
+        return fellings[3];
+      case 'neutral':
+        return fellings[4];
+      case 'confused':
+        return fellings[5];
+      case 'sad':
+        return fellings[6];
+
+      default:
+        return null;
+    }
+  };
+
+  const getChart = async (day: string) => {
+    if (selectedDay === day) {
+      return;
+    }
+    invokeChange(day);
+    setSelectedDay(day);
+  };
 
   return (
     <View style={styles.weekContainer}>
@@ -47,7 +82,7 @@ const WeekDays = () => {
             selectedDay === day.day.toString() && styles.dayStyleAvtive,
           ]}
           onPress={() => {
-            setSelectedDay(day.day.toString());
+            getChart(day.day.toString());
           }}>
           <Text
             style={
@@ -74,7 +109,11 @@ const WeekDays = () => {
               <Image
                 key={day.toString()}
                 resizeMode="contain"
-                source={fellings[index]}
+                source={detectMood(
+                  overallMoods.length > 0
+                    ? overallMoods[index].overall_mood
+                    : 'neutral',
+                )} // fellings[index]
                 style={styles.emojiPic}
               />
             </View>
@@ -91,21 +130,73 @@ type appointmentDetailsType = {
   date: string;
   hour: string;
 };
+type MoodType = {
+  mood: string;
+  time: string;
+  score: number;
+};
+export type moodlistType = {
+  times: MoodType[];
+  overall_mood: string;
+  day: string;
+};
 export default function HomeScreen() {
   const [arrow, setArrow] = useState<'up' | 'down'>('down');
   const progress = useSharedValue(0);
   const [name, setName] = useState<string>('');
+
   const [app, setApp] = useState(DateTime.now().toFormat('ccc, dd LLL '));
+  const [showAppointment, setShowAppointment] = useState<boolean>(false);
   const [appDetails, setAppDetails] = useState<appointmentDetailsType | null>(
     null,
   );
-  const [showAppointment, setShowAppointment] = useState<boolean>(false);
+
+  const [moodTest, setMoodTest] = useState<number>(0);
+  const [moodList, setMoodList] = useState<moodlistType[]>([]);
+  const [selectedDay, setSelectedDay] = useState<string>(
+    DateTime.now().day.toString(),
+  );
   const GetName = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
 
       const storedName = await AsyncStorage.getItem('user');
       const parsedName = storedName ? JSON.parse(storedName) : null;
+      if (token) {
+        const Getmoods = await fetch(
+          'https://psychology-hazel.vercel.app/api/moods',
+          {
+            headers: {
+              Authorization: 'Bearer ' + token,
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+        if (Getmoods.ok) {
+          const {moods} = await Getmoods.json();
+          console.log('Moods:', moods);
+          const list: moodlistType[] = [];
+          if (
+            moods[0].day === new Date().toISOString().split('T')[0] &&
+            moods[0].times.length === 5
+          ) {
+            setMoodTest(5);
+          }
+          type ali = {
+            times: [];
+            overall_mood: string;
+            day: string;
+          };
+          moods.map((mood: ali) => {
+            list.push({
+              times: mood.times,
+              overall_mood: mood.overall_mood,
+              day: mood.day,
+            });
+          });
+          setMoodList(list);
+        }
+      }
       const appointment = await fetch(
         'https://psychology-hazel.vercel.app/api/appointments',
         {
@@ -115,6 +206,7 @@ export default function HomeScreen() {
           },
         },
       );
+
       if (appointment.ok) {
         const appointmentDay = await appointment.json();
 
@@ -137,6 +229,9 @@ export default function HomeScreen() {
       GetName();
     }, []),
   );
+  const invokeChange = (day: string) => {
+    setSelectedDay(day);
+  };
 
   const toggleCheckins = () => {
     if (arrow === 'up') {
@@ -210,11 +305,11 @@ export default function HomeScreen() {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity>
-              <Text style={styles.notifStyle}>🔥5</Text>
+              <Text style={styles.notifStyle}>🔥4</Text>
             </TouchableOpacity>
           </View>
         </View>
-        <WeekDays />
+        <WeekDays overallMoods={moodList} invokeChange={invokeChange} />
         <View
           style={[styles.todayContainer, {marginTop: 40, marginBottom: 15}]}>
           <Text style={{fontSize: 16, fontWeight: 500}}>Today's Check-in </Text>
@@ -276,7 +371,7 @@ export default function HomeScreen() {
                 alignItems: 'center',
                 columnGap: 15,
               }}>
-              <Text>5/5</Text>
+              <Text>{moodTest}/5</Text>
               <View
                 style={{
                   padding: 5,
@@ -298,7 +393,7 @@ export default function HomeScreen() {
             </View>
           </Animated.View>
         )}
-        <Charts />
+        <Charts overall_mood={moodList} selectedDay={selectedDay} />
         <Tips />
       </ScrollView>
     </Screen>

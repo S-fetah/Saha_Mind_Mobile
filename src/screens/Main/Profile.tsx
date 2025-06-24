@@ -8,6 +8,7 @@ import Privacy from '../Pages/profile/Privacy';
 import Help from '../Pages/profile/Help';
 import About from '../Pages/profile/About';
 import History from '../Pages/profile/History';
+import SummaryDetail from '../Pages/profile/summary/SummaryDetails';
 
 const Stack = createNativeStackNavigator<ProfileStackParams>();
 export default function Profile() {
@@ -22,6 +23,8 @@ export default function Profile() {
       <Stack.Screen name="Security" component={Security} />
       <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen name="History" component={History} />
+
+      <Stack.Screen name="SummaryDetail" component={SummaryDetail} />
     </Stack.Navigator>
   );
 }

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -7,62 +7,99 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Dimensions,
+  Platform,
+  Keyboard,
+  ActivityIndicator,
 } from 'react-native';
-import profileImage from '../../assets/images/Profile/pp.png';
+import profileImage from '../../assets/images/Profile/dev2.png';
 import assistant from '../../assets/images/Profile/assisstant.png';
 import {Send} from 'lucide-react-native';
 import {Screen} from '../../components';
+import useChatStorage from '../../Context/useChatStorage';
 
-export default function DoctorScreen() {
+const DoctorScreen = () => {
+  const {loading, conversation, saveConversation, addConvo} = useChatStorage();
   const [message, setMessage] = useState<string>('');
+  // const [generating, setGenerating] = useState<boolean>(false);
+  const scrollToEnd = useRef<ScrollView>(null);
 
-  const handlePress = () => {
-    console.log('message is : ', message);
-  };
   const handleChange = (text: string) => {
     setMessage(text);
   };
+  const handlePress = () => {
+    // setGenerating(true);
+    // setGenerating(false);
+    if (message.trim() === ' ') return;
+    addConvo({name: 'user', text: message});
+    saveConversation([...conversation, {name: 'user', text: message}]);
+
+    setMessage('');
+    Keyboard.dismiss();
+
+    setTimeout(() => {
+      scrollToEnd.current?.scrollToEnd({animated: true});
+    }, 100);
+  };
+  if (loading) {
+    return (
+      <Screen gradient={true}>
+        <ActivityIndicator
+          size="large"
+          color="#0000ff"
+          style={{flex: 1, justifyContent: 'center'}}
+        />
+      </Screen>
+    );
+  }
+
   return (
     <Screen gradient={true}>
-      <ScrollView contentContainerStyle={styles.chatContainer}>
+      <ScrollView
+        contentContainerStyle={styles.chatContainer}
+        ref={scrollToEnd}
+        onContentSizeChange={() =>
+          scrollToEnd.current?.scrollToEnd({animated: true})
+        }>
         <View style={styles.messageRow}>
           <Image source={assistant} style={styles.avatar} />
           <View style={styles.aiBubble}>
-            <Text style={styles.aiName}>Doctor Ali</Text>
+            <Text style={styles.aiName}>Doctor</Text>
             <Text style={styles.messageText}>
-              Hello there mohamed! How are we feeling today?.
+              Hi there!How are you feeling today?
             </Text>
           </View>
         </View>
 
-        <View style={[styles.messageRow, styles.messageRowUser]}>
-          <View style={styles.userBubble}>
-            <Text style={styles.userText}>
-              hello doctor am actually felling a bit better today!.
-            </Text>
-          </View>
-          <Image source={profileImage} style={styles.avatar} />
-        </View>
-        <View style={styles.messageRow}>
-          <Image source={assistant} style={styles.avatar} />
-          <View style={styles.aiBubble}>
-            <Text style={styles.aiName}>Doctor Ali</Text>
-            <Text style={styles.messageText}>
-              That's good to here , make sure to report back if u experience
-              anything unsual
-            </Text>
-          </View>
-        </View>
-
-        <View style={[styles.messageRow, styles.messageRowUser]}>
-          <View style={styles.userBubble}>
-            <Text style={styles.userText}>okay Doctor Thanks</Text>
-          </View>
-          <Image source={profileImage} style={styles.avatar} />
-        </View>
+        {conversation.map(ele => {
+          if (ele.name === 'Doctor') {
+            return (
+              <View style={styles.messageRow} key={ele.text}>
+                <Image source={assistant} style={styles.avatar} />
+                <View style={styles.aiBubble}>
+                  <Text style={styles.aiName}>Doctor</Text>
+                  <Text style={styles.messageText}>{ele.text}</Text>
+                </View>
+              </View>
+            );
+          }
+          return (
+            <View
+              style={[styles.messageRow, styles.messageRowUser]}
+              key={ele.text}>
+              <View style={styles.userBubble}>
+                <Text style={styles.userText}>{ele.text}</Text>
+              </View>
+              <Image source={profileImage} style={styles.avatar} />
+            </View>
+          );
+        })}
       </ScrollView>
-
-      <View style={styles.inputContainer}>
+      <KeyboardAvoidingView
+        behavior="padding"
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 50}
+        style={styles.inputContainer}>
         <TextInput
           placeholder="Message"
           placeholderTextColor="#7A9E9F"
@@ -71,16 +108,15 @@ export default function DoctorScreen() {
           value={message}
         />
 
-        <TouchableOpacity onPress={handlePress}>
-          <Text style={styles.imageIcon}>
-            <Send size={25} />
-          </Text>
+        <TouchableOpacity onPress={handlePress} style={styles.imageIcon}>
+          <Send size={25} />
         </TouchableOpacity>
-      </View>
+      </KeyboardAvoidingView>
     </Screen>
   );
-}
+};
 
+export default DoctorScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -105,9 +141,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   chatContainer: {
-    padding: 16,
+    flexGrow: 1,
     paddingBottom: 100,
     marginTop: '10%',
+    zIndex: 10,
   },
   messageRow: {
     flexDirection: 'row',
@@ -147,33 +184,30 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   messageText: {
-    fontSize: 15,
+    fontSize: 14,
     color: '#333',
+    lineHeight: 20,
   },
   inputContainer: {
-    position: 'absolute',
-
-    left: 16,
-    right: 16,
-    backgroundColor: '#e3ece9',
-    borderRadius: 20,
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    height: 50,
-    bottom: 5,
   },
   textInput: {
-    flex: 1,
     fontSize: 15,
     color: '#333',
+    backgroundColor: '#e3ece9',
+    flex: 1,
+    height: 45,
+    borderRadius: 20,
+    borderWidth: 1,
+    textAlign: 'left',
+    paddingLeft: 20,
   },
   imageIcon: {
     fontSize: 20,
-    marginLeft: 18,
-    width: 30,
-
     paddingLeft: 8,
+    position: 'absolute',
+    top: 10,
+    left: Dimensions.get('window').width - 110,
+    alignSelf: 'center',
   },
 });

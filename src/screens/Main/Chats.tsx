@@ -17,7 +17,7 @@ export default function Chats() {
       const user = await AsyncStorage.getItem('user');
       const parsedUser = user ? JSON.parse(user) : null;
       setAuthed(token !== null);
-
+      console.log(parsedUser?.doctor_id);
       setHasDoctor(parsedUser?.doctor_id);
     } catch (error) {
       console.error('Failed to get token:', error);
@@ -50,8 +50,8 @@ export default function Chats() {
             shadowColor: 'transparent',
             borderWidth: 1.1,
             borderRadius: 10,
-            marginBottom: -55,
-            marginTop: 15,
+            marginBottom: -35,
+            marginTop: 5,
           },
           tabBarIndicatorStyle: {
             backgroundColor: '#121714',

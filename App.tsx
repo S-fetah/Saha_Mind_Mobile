@@ -19,6 +19,7 @@ import 'react-native-get-random-values';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Main from './src/screens/Main/Main';
 import GuestMain from './src/screens/Main/GuestMain';
+import MoodTestScreen from './src/screens/Main/MoodTestScreen';
 
 const Stack = createNativeStackNavigator<RootStackParams>();
 
@@ -53,6 +54,7 @@ function App(): React.JSX.Element {
         <Stack.Screen name="SecondSignUp" component={SecondSignup} />
         <Stack.Screen name="Main" component={Main} />
         <Stack.Screen name="GuestMain" component={GuestMain} />
+        <Stack.Screen name="MoodTestScreen" component={MoodTestScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,11 +1,41 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import React, {useCallback, useState} from 'react';
 import {Screen} from '../../../components';
 import {ArrowLeft} from 'lucide-react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {ProfileStackParams} from '../../../types';
+import {supabase} from '../../../../lib/supabaseclient';
+
+import {useFocusEffect} from '@react-navigation/native';
+import SummaryList from './summary/SummaryList';
+type symType = {
+  date: string;
+  summary: string;
+};
 type HistoryScreenProps = NativeStackScreenProps<ProfileStackParams, 'History'>;
-export default function History({navigation}: HistoryScreenProps) {
+export default function History({navigation, route}: HistoryScreenProps) {
+  const id = route.params?.id;
+
+  const [summaries, setSumarries] = useState<symType[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const FetchReports = async () => {
+        const {data: Summaries, error} = await supabase
+          .from('Summaries')
+          .select('*')
+          .eq('patient_id', id);
+        if (Summaries) {
+          setSumarries(Summaries[0].Summaries);
+        }
+        if (error) {
+          console.error('Error fetching reports:', error);
+          return [];
+        }
+      };
+      FetchReports();
+    }, [id]),
+  );
   return (
     <Screen gradient={true}>
       <View style={styles.header}>
@@ -14,6 +44,8 @@ export default function History({navigation}: HistoryScreenProps) {
         </TouchableOpacity>
         <Text style={styles.headerText}>History</Text>
       </View>
+
+      <SummaryList data={summaries} />
     </Screen>
   );
 }

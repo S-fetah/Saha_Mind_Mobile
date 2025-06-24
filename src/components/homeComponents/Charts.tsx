@@ -12,6 +12,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import {moodlistType} from '../../screens/Pages/HomeScreen';
 
 type moodType = {
   mood: {
@@ -31,8 +32,8 @@ const colors: string[] = [
   '#ffe82b',
   '#eb43af',
 ];
-const scores: number[] = [121, 40, 100, 140, 90];
-const Times: string[] = ['10:02', '12:10', '15:25', '18:30', '20:45'];
+// const scores: number[] = [121, 40, 100, 140, 90];
+// const Times: string[] = ['10:02', '12:10', '15:25', '18:30', '20:45'];
 
 function Place({mood, onfinish}: moodType) {
   const containerProgress = useSharedValue(0);
@@ -114,34 +115,69 @@ function Place({mood, onfinish}: moodType) {
     </Animated.View>
   );
 }
+type ChartsProps = {
+  overall_mood: moodlistType[];
+  selectedDay: string;
+};
+const Charts = ({overall_mood, selectedDay}: ChartsProps) => {
+  console.log('Overall Mood from chart:', overall_mood);
+  console.log('selectedDay ', selectedDay);
+  const selectedMood = overall_mood.filter(ele => {
+    const splitted = ele.day.split('-')[2];
+    return splitted === selectedDay;
+  });
+  console.log(selectedMood);
 
-const Charts = () => {
+  const detectMood = (mood: string) => {
+    switch (mood.toLowerCase()) {
+      case 'shy':
+        return fellings[0];
+
+      case 'preservative':
+        return fellings[1];
+      case 'happy':
+        return fellings[2];
+      case 'angry':
+        return fellings[3];
+      case 'neutral':
+        return fellings[4];
+      case 'confused':
+        return fellings[5];
+      case 'sad':
+        return fellings[6];
+
+      default:
+        return null;
+    }
+  };
+
   const _anime = useSharedValue(0);
+
   return (
     <View style={styles.chartsStyle}>
-      {fellings.map((ele, index) => {
-        if (index < 5) {
-          return (
-            <Place
-              key={index + 1}
-              mood={{
-                img: ele,
-                score: scores[index],
-                time: Times[index],
-                index,
-                anim: _anime,
-                color: colors[index],
-              }}
-              onfinish={() => {
-                _anime.value = 1;
-                // console.log('has finished', index);
-              }}
-            />
-          );
-        } else {
-          return;
-        }
-      })}
+      {overall_mood.length > 0 &&
+        selectedMood[0].times.map((ele, index) => {
+          if (index < 5) {
+            return (
+              <Place
+                key={index + 1}
+                mood={{
+                  img: detectMood(ele.mood),
+                  score: ele.score && ele.score > 150 ? 150 : ele.score,
+                  time: ele.time === '' ? '00:00' : ele.time,
+                  index,
+                  anim: _anime,
+                  color: colors[index],
+                }}
+                onfinish={() => {
+                  _anime.value = 1;
+                }}
+              />
+            );
+          } else {
+            return;
+          }
+        })}
     </View>
   );
 };

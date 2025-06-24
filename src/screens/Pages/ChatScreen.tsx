@@ -13,12 +13,16 @@ import {
   Keyboard,
   ActivityIndicator,
 } from 'react-native';
-import profileImage from '../../assets/images/Profile/pp.png';
+import profileImage from '../../assets/images/Profile/dev2.png';
 import assistant from '../../assets/images/Profile/assisstant.png';
 import {Send} from 'lucide-react-native';
 import {Screen} from '../../components';
 import useChatStorage from '../../Context/useChatStorage';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+type messageType = {
+  name: 'Ai Assistant' | 'user';
+  text: string;
+};
 const ChatScreen = () => {
   // const [messages, setMessages] = useState<messageType[]>([
   //   {
@@ -39,25 +43,73 @@ const ChatScreen = () => {
   //   },
   // ]);
 
-  const {messages, addMessage, loading, saveMessages} = useChatStorage();
+  const {messages, addMessage, loading, saveMessages, clearMessages} =
+    useChatStorage();
   const [message, setMessage] = useState<string>('');
-  const scrollToEnd = useRef<ScrollView>(null);
+  const [generating, setGenerating] = useState<boolean>(false);
 
+  const scrollToEnd = useRef<ScrollView>(null);
+  // clearMessages();
   const handleChange = (text: string) => {
     setMessage(text);
   };
-  const handlePress = () => {
-    if (message.trim() === ' ') return;
-    addMessage({name: 'user', text: message});
-    saveMessages([...messages, {name: 'user', text: message}]);
+  const handlePress = async () => {
+    if (message.trim() === '' || generating) return;
 
+    setGenerating(true); // block input
+
+    const userMsg: messageType = {name: 'user', text: message};
+    addMessage(userMsg);
+    saveMessages([...messages, userMsg]);
     setMessage('');
     Keyboard.dismiss();
+    console.log('messages', messages);
+    scrollToEnd.current?.scrollToEnd({animated: true});
 
-    setTimeout(() => {
-      scrollToEnd.current?.scrollToEnd({animated: true});
-    }, 100);
+    try {
+      const response = await fetch('http://localhost:3000/chat', {
+        method: 'POST',
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: userMsg.text,
+          role: 'patient',
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const assistantMsg: messageType = {
+          name: 'Ai Assistant',
+          text: data.response || 'Sorry, I didn’t get that.',
+        };
+        addMessage(assistantMsg);
+        saveMessages([...messages, userMsg, assistantMsg]);
+      } else {
+        const errorMsg: messageType = {
+          name: 'Ai Assistant',
+          text: 'Something went wrong. Try again later.',
+        };
+        addMessage(errorMsg);
+        saveMessages([...messages, userMsg, errorMsg]);
+      }
+    } catch (err) {
+      const failMsg: messageType = {
+        name: 'Ai Assistant',
+        text: 'Network error. Please try again.',
+      };
+      addMessage(failMsg);
+      saveMessages([...messages, userMsg, failMsg]);
+    } finally {
+      setGenerating(false);
+      setTimeout(() => {
+        scrollToEnd.current?.scrollToEnd({animated: true});
+      }, 100);
+    }
   };
+
   if (loading) {
     return (
       <Screen gradient={true}>
@@ -69,6 +121,7 @@ const ChatScreen = () => {
       </Screen>
     );
   }
+
   return (
     <Screen gradient={true}>
       <ScrollView
@@ -90,7 +143,7 @@ const ChatScreen = () => {
         {messages.map(ele => {
           if (ele.name === 'Ai Assistant') {
             return (
-              <View style={styles.messageRow} key={ele.text}>
+              <View style={styles.messageRow} key={ele.text + Math.random()}>
                 <Image source={assistant} style={styles.avatar} />
                 <View style={styles.aiBubble}>
                   <Text style={styles.aiName}>AI Assistant</Text>
@@ -110,6 +163,15 @@ const ChatScreen = () => {
             </View>
           );
         })}
+        {generating && (
+          <View style={styles.messageRow}>
+            <Image source={assistant} style={styles.avatar} />
+            <View style={styles.aiBubble}>
+              <Text style={styles.aiName}>AI Assistant</Text>
+              <Text style={styles.messageText}>....</Text>
+            </View>
+          </View>
+        )}
       </ScrollView>
       <KeyboardAvoidingView
         behavior="padding"
@@ -199,8 +261,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   messageText: {
-    fontSize: 15,
+    fontSize: 14,
     color: '#333',
+    lineHeight: 20,
   },
   inputContainer: {
     flexDirection: 'row',

@@ -70,7 +70,7 @@ export default function SecondSignup({navigation, route}: SecondSignupProps) {
     );
     try {
       const response = await fetch(
-        'https://psychology-hazel.vercel.app//api/auth/signup',
+        'https://psychology-hazel.vercel.app/api/auth/signup',
         {
           method: 'POST',
           headers: {

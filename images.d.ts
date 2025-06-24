@@ -29,4 +29,8 @@ declare module '@env' {
   export const SUPABASE_EMAIL: string;
   export const SUPABASE_PASSWORD: string;
   export const JWT_SECRET: string;
+  export const REACT_APP_SUPABASE_URL: string;
+  export const REACT_APP_SUPABASE_ANON_KEY: string;
+  export const SUPABASE_SUMMARY_PSWD: string;
+  export const SUPABASE_SUMMARY_EMAIL: string;
 }

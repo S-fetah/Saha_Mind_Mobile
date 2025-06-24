@@ -140,7 +140,7 @@ const ProfileScreen = ({navigation}: profileScreenProps) => {
         <ProfileListItem
           title="History"
           isSwitch={false}
-          onPress={() => navigation.navigate('History')}
+          onPress={() => navigation.navigate('History', {id: +userInfo.id})}
         />
         <ProfileListItem
           title="Notifications"

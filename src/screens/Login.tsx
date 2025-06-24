@@ -19,7 +19,7 @@ import google from '../assets/images/google.png';
 import facebook from '../assets/images/facebook.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SUPABASE_EMAIL, SUPABASE_PASSWORD} from '@env';
-import {Activity} from 'lucide-react-native';
+
 export type loginProps = NativeStackScreenProps<RootStackParams, 'Login'>;
 
 const Login = ({navigation, route}: loginProps) => {
@@ -44,7 +44,7 @@ const Login = ({navigation, route}: loginProps) => {
       setLoading(false);
       return;
     }
-
+    console.log('Logging in with:', {email, password});
     const response = await fetch(
       'https://psychology-hazel.vercel.app/api/auth/login',
       {
@@ -57,7 +57,10 @@ const Login = ({navigation, route}: loginProps) => {
         body: JSON.stringify({email, password, type: 'patient'}),
       },
     );
+    console.log(response);
+
     if (response.ok) {
+      setLoading(false);
       const {token, user} = await response.json();
       console.log(response.json());
       try {
@@ -66,7 +69,6 @@ const Login = ({navigation, route}: loginProps) => {
           ['user', JSON.stringify(user)],
         ]);
         navigation.navigate('Main');
-        setLoading(false);
       } catch (err) {
         console.log(err);
       }
