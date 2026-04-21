@@ -73,7 +73,11 @@ const Login = ({navigation, route}: loginProps) => {
         console.log(err);
       }
     } else {
+ 
+      
+     
       Alert.alert('Wrong credentials please try again!');
+     
     }
   };
   return (

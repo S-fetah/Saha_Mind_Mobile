@@ -33,7 +33,7 @@ const colors: string[] = [
   '#eb43af',
 ];
 // const scores: number[] = [121, 40, 100, 140, 90];
-// const Times: string[] = ['10:02', '12:10', '15:25', '18:30', '20:45'];
+//
 
 function Place({mood, onfinish}: moodType) {
   const containerProgress = useSharedValue(0);
@@ -126,7 +126,7 @@ const Charts = ({overall_mood, selectedDay}: ChartsProps) => {
     const splitted = ele.day.split('-')[2];
     return splitted === selectedDay;
   });
-  console.log(selectedMood);
+  console.log('selectedMood ', selectedMood);
 
   const detectMood = (mood: string) => {
     switch (mood.toLowerCase()) {
@@ -150,21 +150,42 @@ const Charts = ({overall_mood, selectedDay}: ChartsProps) => {
         return null;
     }
   };
-
+  const Times: string[] = ['10:02', '12:10', '15:25', '18:30', '20:45'];
   const _anime = useSharedValue(0);
 
   return (
     <View style={styles.chartsStyle}>
-      {overall_mood.length > 0 &&
-        selectedMood[0].times.map((ele, index) => {
-          if (index < 5) {
+      {overall_mood.length > 0 && selectedMood.length > 0
+        ? selectedMood[0].times.map((ele, index) => {
+            if (index < 5) {
+              return (
+                <Place
+                  key={index + 1}
+                  mood={{
+                    img: detectMood(ele.mood),
+                    score: ele.score && ele.score > 150 ? 150 : ele.score,
+                    time: ele.time === '' ? '00:00' : ele.time,
+                    index,
+                    anim: _anime,
+                    color: colors[index],
+                  }}
+                  onfinish={() => {
+                    _anime.value = 1;
+                  }}
+                />
+              );
+            } else {
+              return;
+            }
+          })
+        : Times.map((ele, index) => {
             return (
               <Place
                 key={index + 1}
                 mood={{
-                  img: detectMood(ele.mood),
-                  score: ele.score && ele.score > 150 ? 150 : ele.score,
-                  time: ele.time === '' ? '00:00' : ele.time,
+                  img: fellings[index],
+                  score: 0,
+                  time: ele,
                   index,
                   anim: _anime,
                   color: colors[index],
@@ -174,10 +195,7 @@ const Charts = ({overall_mood, selectedDay}: ChartsProps) => {
                 }}
               />
             );
-          } else {
-            return;
-          }
-        })}
+          })}
     </View>
   );
 };
